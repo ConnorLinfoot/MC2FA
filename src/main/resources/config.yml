@@ -6,6 +6,17 @@ Enabled: true
 # Whether 2FA should be forced, supports true, false or OP
 Forced: false
 
+# Disable all commands if not yet authenticatec (other than 2fa ones)
+Disable Commands: true
+
+# If the above is true you can whitelist commands with the below
+Whitelisted Commands:
+  - "help"
+
+# If commands are not disabled you can use the below to blacklist specific commands instead
+Blacklisted Commands:
+  - "spawn"
+
 # Key storage, either FLAT or MYSQL
 Key Storage: FLAT
 

@@ -1,4 +1,12 @@
 package com.connorlinfoot.mc2fa.bungee;
 
-public class MC2FA {
+import net.md_5.bungee.api.plugin.Plugin;
+
+public class MC2FA extends Plugin {
+
+	@Override
+	public void onEnable() {
+		getProxy().getLogger().warning("MC2FA does NOT yet support BungeeCord, sorry :(");
+	}
+
 }

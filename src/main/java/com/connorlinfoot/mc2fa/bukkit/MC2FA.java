@@ -1,5 +1,8 @@
 package com.connorlinfoot.mc2fa.bukkit;
 
+import com.connorlinfoot.mc2fa.bukkit.Handlers.CommandHandler;
+import com.connorlinfoot.mc2fa.bukkit.Listeners.PlayerListener;
+import com.connorlinfoot.mc2fa.shared.AuthHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;

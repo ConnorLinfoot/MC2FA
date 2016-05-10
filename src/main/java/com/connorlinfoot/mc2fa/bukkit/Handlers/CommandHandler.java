@@ -1,5 +1,6 @@
-package com.connorlinfoot.mc2fa.bukkit;
+package com.connorlinfoot.mc2fa.bukkit.Handlers;
 
+import com.connorlinfoot.mc2fa.bukkit.MC2FA;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,7 +23,7 @@ public class CommandHandler implements CommandExecutor {
 		}
 
 		Player player = (Player) sender;
-		if( mc2FA.getAuthHandler().isPending(player)) {
+		if( mc2FA.getAuthHandler().isPending(player.getUniqueId())) {
 			if( args.length == 0 ) {
 				player.sendMessage(ChatColor.RED + "Please validate your two-factor authentication key with /" + string + " <key>");
 			} else {
@@ -34,22 +35,22 @@ public class CommandHandler implements CommandExecutor {
 					return false;
 				}
 
-				boolean approved = mc2FA.getAuthHandler().approveKey(player, key);
+				boolean approved = mc2FA.getAuthHandler().approveKey(player.getUniqueId(), key);
 				if( approved ) {
 					player.sendMessage(ChatColor.GREEN + "You have successfully setup two-factor authentication :)");
 				} else {
 					player.sendMessage(ChatColor.RED + "The key you entered was not valid, please try again!");
 				}
 			}
-		} else if( ! mc2FA.getAuthHandler().isEnabled(player)) {
-			mc2FA.getAuthHandler().createKey(player);
+		} else if( ! mc2FA.getAuthHandler().isEnabled(player.getUniqueId())) {
+			mc2FA.getAuthHandler().createKey(player.getUniqueId());
 			player.sendMessage(ChatColor.GREEN + "Please follow the link below to setup two-factor authentication");
-			player.sendMessage(mc2FA.getAuthHandler().getQRCodeURL(player));
+			player.sendMessage(mc2FA.getAuthHandler().getQRCodeURL(player.getUniqueId()));
 			player.sendMessage("");
 			player.sendMessage(ChatColor.GREEN + "Please validate by entering your key: /" + string + " <key>");
 		} else {
 			if( args.length > 0 ) {
-				boolean isValid = mc2FA.getAuthHandler().validateKey(player, Integer.valueOf(args[0]));
+				boolean isValid = mc2FA.getAuthHandler().validateKey(player.getUniqueId(), Integer.valueOf(args[0]));
 				player.sendMessage(String.valueOf(isValid));
 			}
 		}

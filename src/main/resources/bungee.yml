@@ -1,0 +1,3 @@
+name: MC2FA
+main: com.connorlinfoot.mc2fa.bungee.MC2FA
+version: ${project.version}

@@ -1,5 +1,6 @@
-package com.connorlinfoot.mc2fa.bukkit;
+package com.connorlinfoot.mc2fa.bukkit.Listeners;
 
+import com.connorlinfoot.mc2fa.bukkit.MC2FA;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,7 +20,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		boolean is2fa = mc2FA.getAuthHandler().isEnabled(event.getPlayer());
+		boolean is2fa = mc2FA.getAuthHandler().isEnabled(event.getPlayer().getUniqueId());
 		if( is2fa ) {
 			// Require password from 2FA
 		} else {
@@ -31,12 +32,12 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		mc2FA.getAuthHandler().playerQuit(event.getPlayer());
+		mc2FA.getAuthHandler().playerQuit(event.getPlayer().getUniqueId());
 	}
 
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
-		if(mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer())) {
+		if(mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "Please validate your account with two-factor authentication");
 		}
@@ -44,7 +45,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
-		if(mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer())) {
+		if(mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "Please validate your account with two-factor authentication");
 		}
@@ -52,7 +53,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if(mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer())) {
+		if(mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "Please validate your account with two-factor authentication");
 		}
@@ -60,7 +61,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		if(mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer())) {
+		if(mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "Please validate your account with two-factor authentication");
 		}
