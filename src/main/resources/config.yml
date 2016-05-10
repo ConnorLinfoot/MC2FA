@@ -1,0 +1,20 @@
+# MC2FA v${project.version} Configuration
+
+# Whether or not 2FA should be enabled
+Enabled: true
+
+# Whether 2FA should be forced, supports true, false or OP
+Forced: false
+
+# Key storage, either FLAT or MYSQL
+Key Storage: FLAT
+
+# If the above is MYSQL please enter MySQL connection details
+MySQL Host: 127.0.0.1
+MySQL Port: 3306
+MySQL User: username
+MySQL Pass: password
+MySQL Database: database
+
+Messages:
+  Prefix: "[MC2FA]"

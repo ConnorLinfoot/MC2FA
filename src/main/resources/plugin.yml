@@ -1,0 +1,7 @@
+name: MC2FA
+description: Bringing two factor authentication into Minecraft.
+main: com.connorlinfoot.mc2fa.bukkit.MC2FA
+version: ${project.version}
+commands:
+  2fa:
+    aliases: [twofactorauth,twofactorauthentication,twofa,tfa]
