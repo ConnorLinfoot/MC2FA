@@ -3,6 +3,7 @@ package com.connorlinfoot.mc2fa.bukkit.Listeners;
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -35,7 +36,7 @@ public class PlayerListener implements Listener {
 		mc2FA.getAuthHandler().playerQuit(event.getPlayer().getUniqueId());
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		if(mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
@@ -43,7 +44,7 @@ public class PlayerListener implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onBlockBreak(BlockBreakEvent event) {
 		if(mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
@@ -51,7 +52,7 @@ public class PlayerListener implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if(mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
@@ -59,7 +60,7 @@ public class PlayerListener implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if(mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);

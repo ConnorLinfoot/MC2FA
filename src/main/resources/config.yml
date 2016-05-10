@@ -6,7 +6,7 @@ Enabled: true
 # Whether 2FA should be forced, supports true, false or OP
 Forced: false
 
-# Disable all commands if not yet authenticatec (other than 2fa ones)
+# Disable all commands if not yet authenticated (other than 2fa ones)
 Disable Commands: true
 
 # If the above is true you can whitelist commands with the below
@@ -29,3 +29,4 @@ MySQL Database: database
 
 Messages:
   Prefix: "[MC2FA]"
+  Validate: "Please validate your account with two-factor authentication"
