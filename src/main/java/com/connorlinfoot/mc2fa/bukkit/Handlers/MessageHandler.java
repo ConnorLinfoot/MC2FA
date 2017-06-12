@@ -23,6 +23,10 @@ public class MessageHandler extends com.connorlinfoot.mc2fa.shared.MessageHandle
 		return ChatColor.translateAlternateColorCodes('&', prefix);
 	}
 
+	public String getMessage(String message) {
+		return getPrefix() + ChatColor.translateAlternateColorCodes('&', messagesConfig.getString(message, "&4Unknown message"));
+	}
+
 	public void loadConfiguration() {
 		File messagesFile = new File(mc2FA.getDataFolder(), "messages.yml");
 		if (!messagesFile.exists()) {
@@ -39,6 +43,9 @@ public class MessageHandler extends com.connorlinfoot.mc2fa.shared.MessageHandle
 
 		if (!messagesConfig.isSet("Prefix"))
 			messagesConfig.set("Prefix", "&7[&bCratesPlus&7]");
+
+		if (!messagesConfig.isSet("Validate"))
+			messagesConfig.set("Validate", "&4Please validate your account with two-factor authentication");
 
 		try {
 			messagesConfig.save(messagesFile);

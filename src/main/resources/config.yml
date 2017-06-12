@@ -17,16 +17,12 @@ Whitelisted Commands:
 Blacklisted Commands:
   - "spawn"
 
-# Key storage, either FLAT or MYSQL
+# Key storage, either FLAT or MYSQL - MySQL is not yet supported
 Key Storage: FLAT
 
-# If the above is MYSQL please enter MySQL connection details
+# If the above is MYSQL please enter MySQL connection details (Coming Soon)
 MySQL Host: 127.0.0.1
 MySQL Port: 3306
 MySQL User: username
 MySQL Pass: password
 MySQL Database: database
-
-Messages:
-  Prefix: "[MC2FA]"
-  Validate: "Please validate your account with two-factor authentication"

@@ -11,5 +11,7 @@ public abstract class MessageHandler {
 		this.prefix = prefix;
 	}
 
+	public abstract String getMessage(String message);
+
 	public abstract void loadConfiguration();
 }

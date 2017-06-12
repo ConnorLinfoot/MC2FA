@@ -48,6 +48,11 @@ public class ConfigHandler {
 			}
 		}
 
+		if( keyStorage == KeyStorage.MYSQL ) {
+			mc2FA.getLogger().warning("MySQL storage is not yet supported, reverting to flat file storage");
+			keyStorage = KeyStorage.FLAT;
+		}
+
 		if (config.isSet("Forced")) {
 			try {
 				forced = Forced.valueOf(config.getString("Forced").toUpperCase());
