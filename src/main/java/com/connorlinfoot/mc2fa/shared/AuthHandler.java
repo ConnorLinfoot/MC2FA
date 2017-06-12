@@ -67,7 +67,7 @@ public class AuthHandler {
 		return urlTemplate.replaceAll("%key%", key);
 	}
 
-	public boolean needsToAuthenticated(UUID uuid) {
+	public boolean needsToAuthenticate(UUID uuid) {
 		return isEnabled(uuid) && !authenticated.contains(uuid);
 	}
 

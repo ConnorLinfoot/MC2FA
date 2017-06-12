@@ -6,7 +6,7 @@ public class MC2FA extends Plugin {
 
 	@Override
 	public void onEnable() {
-		getProxy().getLogger().warning("MC2FA does NOT yet support BungeeCord, sorry :(");
+		getProxy().getLogger().severe("MC2FA does NOT yet support BungeeCord, sorry :(");
 	}
 
 }

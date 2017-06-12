@@ -43,7 +43,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerMove(PlayerMoveEvent event) {
-		if (mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer().getUniqueId())) {
+		if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
 		}
@@ -51,7 +51,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer().getUniqueId())) {
+		if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
 		}
@@ -59,7 +59,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer().getUniqueId())) {
+		if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
 		}
@@ -67,7 +67,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		if (mc2FA.getAuthHandler().needsToAuthenticated(event.getPlayer().getUniqueId())) {
+		if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
 		}
