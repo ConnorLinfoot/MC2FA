@@ -1,7 +1,7 @@
 package com.connorlinfoot.mc2fa.bukkit.listeners;
 
-import com.connorlinfoot.mc2fa.bukkit.handlers.ConfigHandler;
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
+import com.connorlinfoot.mc2fa.bukkit.handlers.ConfigHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,7 +24,10 @@ public class PlayerListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		boolean is2fa = mc2FA.getAuthHandler().isEnabled(event.getPlayer().getUniqueId());
 		if (is2fa) {
-			// Require password from 2FA
+			if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
+				// Require password from 2FA
+				event.getPlayer().sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.RED + "/2fa");
+			}
 		} else {
 			if (mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.TRUE || (event.getPlayer().isOp() && mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.OP)) {
 				// Force 2FA
@@ -44,9 +47,10 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
-			event.setTo(event.getFrom());
-//			event.setCancelled(true);
-			event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
+			if( event.getTo().getBlockZ() != event.getFrom().getBlockZ() || event.getTo().getBlockX() != event.getFrom().getBlockX() ||  event.getTo().getBlockY() != event.getFrom().getBlockY() ) {
+				event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
+				event.setTo(event.getFrom());
+			}
 		}
 	}
 
