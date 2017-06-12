@@ -16,9 +16,8 @@ public class CommandHandler implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String string, String[] args) {
-
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "This command must be ran as a player!");
+			sender.sendMessage(ChatColor.RED + "This command must be ran as a player");
 			return false;
 		}
 
@@ -37,9 +36,9 @@ public class CommandHandler implements CommandExecutor {
 
 				boolean approved = mc2FA.getAuthHandler().approveKey(player.getUniqueId(), key);
 				if( approved ) {
-					player.sendMessage(ChatColor.GREEN + "You have successfully setup two-factor authentication :)");
+					player.sendMessage(ChatColor.GREEN + "You have successfully setup two-factor authentication");
 				} else {
-					player.sendMessage(ChatColor.RED + "The key you entered was not valid, please try again!");
+					player.sendMessage(ChatColor.RED + "The key you entered was not valid, please try again");
 				}
 			}
 		} else if( ! mc2FA.getAuthHandler().isEnabled(player.getUniqueId())) {
