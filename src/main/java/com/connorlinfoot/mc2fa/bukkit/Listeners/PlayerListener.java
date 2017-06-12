@@ -26,7 +26,7 @@ public class PlayerListener implements Listener {
 			// Require password from 2FA
 		} else {
 			// Advise of 2FA
-			event.getPlayer().sendMessage(ChatColor.GOLD + "This server supports two-factor authentication and is highly recommended!");
+			event.getPlayer().sendMessage(ChatColor.GOLD + "This server supports two-factor authentication and is highly recommended");
 			event.getPlayer().sendMessage(ChatColor.GOLD + "Get setup by running /2fa");
 		}
 	}
