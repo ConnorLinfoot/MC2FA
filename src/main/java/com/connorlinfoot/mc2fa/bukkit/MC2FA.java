@@ -4,11 +4,14 @@ import com.connorlinfoot.mc2fa.bukkit.handlers.CommandHandler;
 import com.connorlinfoot.mc2fa.bukkit.handlers.ConfigHandler;
 import com.connorlinfoot.mc2fa.bukkit.handlers.MessageHandler;
 import com.connorlinfoot.mc2fa.bukkit.listeners.PlayerListener;
+import com.connorlinfoot.mc2fa.bukkit.utils.MCStats;
 import com.connorlinfoot.mc2fa.shared.AuthHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.IOException;
 
 public class MC2FA extends JavaPlugin implements CommandExecutor {
 	private ConfigHandler configHandler;
@@ -19,6 +22,15 @@ public class MC2FA extends JavaPlugin implements CommandExecutor {
 		configHandler = new ConfigHandler(this);
 		authHandler = new AuthHandler();
 		messageHandler = new MessageHandler(this);
+
+		if (getConfig().getBoolean("MCStats", true)) {
+			try {
+				MCStats mcstats = new MCStats(this);
+				mcstats.start();
+			} catch (IOException e) {
+				// Failed to submit the stats :-(
+			}
+		}
 
 		getServer().getPluginCommand("2fa").setExecutor(new CommandHandler(this));
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
