@@ -1,4 +1,4 @@
-package com.connorlinfoot.mc2fa.bukkit.Handlers;
+package com.connorlinfoot.mc2fa.bukkit.handlers;
 
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
 import org.bukkit.configuration.file.FileConfiguration;

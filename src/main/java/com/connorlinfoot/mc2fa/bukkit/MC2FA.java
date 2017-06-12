@@ -1,9 +1,9 @@
 package com.connorlinfoot.mc2fa.bukkit;
 
-import com.connorlinfoot.mc2fa.bukkit.Handlers.CommandHandler;
-import com.connorlinfoot.mc2fa.bukkit.Handlers.ConfigHandler;
-import com.connorlinfoot.mc2fa.bukkit.Handlers.MessageHandler;
-import com.connorlinfoot.mc2fa.bukkit.Listeners.PlayerListener;
+import com.connorlinfoot.mc2fa.bukkit.handlers.CommandHandler;
+import com.connorlinfoot.mc2fa.bukkit.handlers.ConfigHandler;
+import com.connorlinfoot.mc2fa.bukkit.handlers.MessageHandler;
+import com.connorlinfoot.mc2fa.bukkit.listeners.PlayerListener;
 import com.connorlinfoot.mc2fa.shared.AuthHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

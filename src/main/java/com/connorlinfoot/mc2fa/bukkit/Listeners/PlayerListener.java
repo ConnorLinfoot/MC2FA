@@ -1,6 +1,6 @@
-package com.connorlinfoot.mc2fa.bukkit.Listeners;
+package com.connorlinfoot.mc2fa.bukkit.listeners;
 
-import com.connorlinfoot.mc2fa.bukkit.Handlers.ConfigHandler;
+import com.connorlinfoot.mc2fa.bukkit.handlers.ConfigHandler;
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
