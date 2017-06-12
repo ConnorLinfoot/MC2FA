@@ -13,6 +13,7 @@ public class MessageHandler extends com.connorlinfoot.mc2fa.shared.MessageHandle
 
 	public MessageHandler(MC2FA mc2FA) {
 		this.mc2FA = mc2FA;
+		loadConfiguration();
 	}
 
 	public String getPrefix() {
