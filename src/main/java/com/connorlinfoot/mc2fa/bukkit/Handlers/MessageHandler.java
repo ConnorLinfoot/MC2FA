@@ -18,7 +18,7 @@ public class MessageHandler extends com.connorlinfoot.mc2fa.shared.MessageHandle
 	public String getPrefix() {
 		String prefix = super.getPrefix();
 		if (messagesConfig.isSet("Prefix")) {
-			prefix = messagesConfig.getString("Prefix", prefix);
+			prefix = messagesConfig.getString("Prefix") + "&r ";
 		}
 		return ChatColor.translateAlternateColorCodes('&', prefix);
 	}
