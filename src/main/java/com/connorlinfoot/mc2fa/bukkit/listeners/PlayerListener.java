@@ -44,7 +44,8 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
-			event.setCancelled(true);
+			event.setTo(event.getFrom());
+//			event.setCancelled(true);
 			event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
 		}
 	}
