@@ -1,6 +1,8 @@
 package com.connorlinfoot.mc2fa.bukkit;
 
 import com.connorlinfoot.mc2fa.bukkit.Handlers.CommandHandler;
+import com.connorlinfoot.mc2fa.bukkit.Handlers.ConfigHandler;
+import com.connorlinfoot.mc2fa.bukkit.Handlers.MessageHandler;
 import com.connorlinfoot.mc2fa.bukkit.Listeners.PlayerListener;
 import com.connorlinfoot.mc2fa.shared.AuthHandler;
 import org.bukkit.Bukkit;
@@ -9,23 +11,33 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MC2FA extends JavaPlugin implements CommandExecutor {
+	private ConfigHandler configHandler;
 	private AuthHandler authHandler;
+	private MessageHandler messageHandler;
 
-	@Override
 	public void onEnable() {
+		configHandler = new ConfigHandler(this);
 		authHandler = new AuthHandler();
+		messageHandler = new MessageHandler(this);
+
 		getServer().getPluginCommand("2fa").setExecutor(new CommandHandler(this));
 		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-		Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "MC2FA v" + getDescription().getVersion() + " has started!");
+		Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "MC2FA v" + getDescription().getVersion() + " has been enabled");
 	}
 
-	@Override
 	public void onDisable() {
 
+	}
+
+	public ConfigHandler getConfigHandler() {
+		return configHandler;
 	}
 
 	public AuthHandler getAuthHandler() {
 		return authHandler;
 	}
 
+	public MessageHandler getMessageHandler() {
+		return messageHandler;
+	}
 }
