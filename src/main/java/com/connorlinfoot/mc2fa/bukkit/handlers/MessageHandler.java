@@ -43,7 +43,7 @@ public class MessageHandler extends com.connorlinfoot.mc2fa.shared.MessageHandle
 		messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
 
 		if (!messagesConfig.isSet("Prefix"))
-			messagesConfig.set("Prefix", "&7[&bCratesPlus&7]");
+			messagesConfig.set("Prefix", "&7[&bMC2FA&7]");
 
 		if (!messagesConfig.isSet("Validate"))
 			messagesConfig.set("Validate", "&4Please validate your account with two-factor authentication");
