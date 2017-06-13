@@ -18,6 +18,7 @@ Whitelisted Commands:
 
 # If commands are not disabled you can use the below to blacklist specific commands instead
 Blacklisted Commands:
+  - "op"
   - "spawn"
 
 # Key storage, either FLAT or MYSQL - MySQL is not yet supported

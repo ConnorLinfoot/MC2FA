@@ -8,12 +8,11 @@ import com.connorlinfoot.mc2fa.bukkit.utils.MCStats;
 import com.connorlinfoot.mc2fa.shared.AuthHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 
-public class MC2FA extends JavaPlugin implements CommandExecutor {
+public class MC2FA extends JavaPlugin {
     private ConfigHandler configHandler;
     private AuthHandler authHandler;
     private MessageHandler messageHandler;

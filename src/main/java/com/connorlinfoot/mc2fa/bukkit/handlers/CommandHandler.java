@@ -10,11 +10,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 public class CommandHandler implements CommandExecutor {
     private MC2FA mc2FA;
@@ -47,6 +49,11 @@ public class CommandHandler implements CommandExecutor {
                 boolean approved = mc2FA.getAuthHandler().approveKey(player.getUniqueId(), key);
                 if (approved) {
                     player.sendMessage(messageHandler.getPrefix() + ChatColor.GREEN + "You have successfully setup two-factor authentication");
+                    player.getInventory().forEach(itemStack -> {
+                        if (itemStack != null && itemStack.getType() == Material.MAP && itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName() && itemStack.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "QR Code")) {
+                            player.getInventory().remove(itemStack);
+                        }
+                    });
                 } else {
                     player.sendMessage(messageHandler.getPrefix() + ChatColor.RED + "The key you entered was not valid, please try again");
                 }
@@ -78,7 +85,12 @@ public class CommandHandler implements CommandExecutor {
                 try {
                     ImageRenderer renderer = new ImageRenderer(urlStr);
                     view.addRenderer(renderer);
-                    player.getInventory().addItem(new ItemStack(Material.MAP, 1, view.getId()));
+                    ItemStack mapItem = new ItemStack(Material.MAP, 1, view.getId());
+                    ItemMeta mapMeta = mapItem.getItemMeta();
+                    mapMeta.setDisplayName(ChatColor.GOLD + "QR Code");
+                    mapItem.setItemMeta(mapMeta);
+
+                    player.getInventory().addItem(mapItem);
                     player.sendMessage(messageHandler.getPrefix() + ChatColor.GREEN + "Please use the QR code given to setup two-factor authentication");
                     player.sendMessage(messageHandler.getPrefix() + ChatColor.GREEN + "Please validate by entering your key: /2fa <key>");
                 } catch (IOException e) {

@@ -3,15 +3,13 @@ package com.connorlinfoot.mc2fa.bukkit.listeners;
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
 import com.connorlinfoot.mc2fa.bukkit.handlers.ConfigHandler;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 
 public class PlayerListener implements Listener {
     private MC2FA mc2FA;
@@ -75,6 +73,29 @@ public class PlayerListener implements Listener {
         if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onItemDrop(PlayerDropItemEvent event) {
+        if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
+            event.setCancelled(true);
+        } else if (event.getItemDrop().getItemStack().getType() == Material.MAP && event.getItemDrop().getItemStack().hasItemMeta() && event.getItemDrop().getItemStack().getItemMeta().hasDisplayName() && event.getItemDrop().getItemStack().getItemMeta().getDisplayName().equals(ChatColor.GOLD + "QR Code")) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onItemPickup(PlayerPickupItemEvent event) {
+        if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onArrowPickup(PlayerPickupArrowEvent event) {
+        if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
+            event.setCancelled(true);
         }
     }
 
