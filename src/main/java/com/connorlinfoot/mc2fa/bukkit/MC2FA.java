@@ -14,42 +14,44 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.IOException;
 
 public class MC2FA extends JavaPlugin implements CommandExecutor {
-	private ConfigHandler configHandler;
-	private AuthHandler authHandler;
-	private MessageHandler messageHandler;
+    private ConfigHandler configHandler;
+    private AuthHandler authHandler;
+    private MessageHandler messageHandler;
 
-	public void onEnable() {
-		configHandler = new ConfigHandler(this);
-		authHandler = new AuthHandler();
-		messageHandler = new MessageHandler(this);
+    public void onEnable() {
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+        configHandler = new ConfigHandler(this);
+        authHandler = new AuthHandler();
+        messageHandler = new MessageHandler(this);
 
-		if (getConfig().getBoolean("MCStats", true)) {
-			try {
-				MCStats mcstats = new MCStats(this);
-				mcstats.start();
-			} catch (IOException e) {
-				// Failed to submit the stats :-(
-			}
-		}
+        if (getConfig().getBoolean("MCStats", true)) {
+            try {
+                MCStats mcstats = new MCStats(this);
+                mcstats.start();
+            } catch (IOException e) {
+                // Failed to submit the stats :-(
+            }
+        }
 
-		getServer().getPluginCommand("2fa").setExecutor(new CommandHandler(this));
-		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-		Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "MC2FA v" + getDescription().getVersion() + " has been enabled");
-	}
+        getServer().getPluginCommand("2fa").setExecutor(new CommandHandler(this));
+        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "MC2FA v" + getDescription().getVersion() + " has been enabled");
+    }
 
-	public void onDisable() {
+    public void onDisable() {
 
-	}
+    }
 
-	public ConfigHandler getConfigHandler() {
-		return configHandler;
-	}
+    public ConfigHandler getConfigHandler() {
+        return configHandler;
+    }
 
-	public AuthHandler getAuthHandler() {
-		return authHandler;
-	}
+    public AuthHandler getAuthHandler() {
+        return authHandler;
+    }
 
-	public MessageHandler getMessageHandler() {
-		return messageHandler;
-	}
+    public MessageHandler getMessageHandler() {
+        return messageHandler;
+    }
 }

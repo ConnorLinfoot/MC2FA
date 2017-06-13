@@ -1,17 +1,17 @@
 package com.connorlinfoot.mc2fa.shared;
 
 public abstract class MessageHandler {
-	private String prefix = "&7[&bMC2FA&7]&r ";
+    private String prefix = "&7[&bMC2FA&7]&r ";
 
-	public String getPrefix() {
-		return this.prefix;
-	}
+    public String getPrefix() {
+        return this.prefix;
+    }
 
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
 
-	public abstract String getMessage(String message);
+    public abstract String getMessage(String message);
 
-	public abstract void loadConfiguration();
+    public abstract void loadConfiguration();
 }
