@@ -21,6 +21,7 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
     private MC2FA mc2FA;
     private ArrayList<UUID> openGUIs = new ArrayList<>();
     private HashMap<UUID, ArrayList<ItemStack>> heldItems = new HashMap<>();
+    private HashMap<UUID, String> currentGUIKeys = new HashMap<>();
 
     public AuthHandler(MC2FA mc2FA) {
         this.mc2FA = mc2FA;
@@ -77,25 +78,19 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
     }
 
     public void open2FAGUI(Player player) {
-        Inventory gui = Bukkit.createInventory(null, 45, "2FA");
-
-        // I always forget my inventories, okay!
-        // 0 1 2 3 4 5 6 7 8
-        // 9 0 1 2 3 4 5 6 7
-        // 8 9 0 1 2 3 4 5 6
-        // 7 8 9 0 1 2 3 4 5
-        // 6 7 8 9 0 1 2 3 4
-        // 5 6 7 8 9 0 1 2 3
-
-        // 0 1 2 3 4 5 6 7 8
-        // 9 0 1 * * * 5 6 7
-        // 8 9 0 * * * 4 5 6
-        // 7 8 9 * * * 3 4 5
-        // 6 7 8 9 * 1 2 3 4
-        // 5 6 7 8 9 0 1 2 3
+        String title = "MC2FA";
+        if (currentGUIKeys.containsKey(player.getUniqueId()) && currentGUIKeys.get(player.getUniqueId()).length() > 0) {
+            if (currentGUIKeys.get(player.getUniqueId()).length() == 6) {
+                player.closeInventory();
+                player.performCommand("2fa " + currentGUIKeys.get(player.getUniqueId()));
+                return;
+            }
+            title += " - " + currentGUIKeys.get(player.getUniqueId());
+        }
+        Inventory gui = Bukkit.createInventory(null, 54, title);
 
         int slot = 12;
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 10; i++) {
             if (slot == 15) {
                 slot = 21;
             } else if (slot == 24) {
@@ -103,9 +98,13 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
             } else if (slot == 33) {
                 slot = 40;
             }
-            ItemStack itemStack = new ItemStack(Material.STAINED_GLASS_PANE, 1);
+            ItemStack itemStack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.setDisplayName(ChatColor.WHITE + "" + (i + 1));
+            int no = (i + 1);
+            if (no == 10) {
+                no = 0;
+            }
+            itemMeta.setDisplayName(ChatColor.WHITE + "" + no);
             itemStack.setItemMeta(itemMeta);
             gui.setItem(slot, itemStack);
             slot++;
@@ -114,7 +113,14 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
         player.openInventory(gui);
     }
 
-    @Override
+    public void enterNumGUI(Player player, int num) {
+        String current = "";
+        if (currentGUIKeys.containsKey(player.getUniqueId())) {
+            current = currentGUIKeys.get(player.getUniqueId());
+        }
+        currentGUIKeys.put(player.getUniqueId(), current + String.valueOf(num));
+    }
+
     public void playerJoin(UUID uuid) {
         super.playerJoin(uuid);
         Player player = Bukkit.getPlayer(uuid);
@@ -126,7 +132,7 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
             if (needsToAuthenticate(uuid)) {
                 // Require password from 2FA
                 player.sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.RED + "/2fa");
-                open2FAGUI(player);
+                Bukkit.getScheduler().runTaskLater(mc2FA, () -> open2FAGUI(player), 5L);
             }
         } else {
             if (mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.TRUE || (player.isOp() && mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.OP)) {
@@ -139,10 +145,16 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
         }
     }
 
+    public boolean hasGUIOpen(UUID uuid) {
+        return isEnabled(uuid) && openGUIs.contains(uuid);
+    }
+
     public void playerQuit(UUID uuid) {
         super.playerQuit(uuid);
         if (openGUIs.contains(uuid))
             openGUIs.remove(uuid);
+        if (currentGUIKeys.containsKey(uuid))
+            currentGUIKeys.remove(uuid);
     }
 
 }

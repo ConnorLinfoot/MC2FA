@@ -12,7 +12,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.Inventory;
 
 public class PlayerListener implements Listener {
     private MC2FA mc2FA;
@@ -81,12 +83,13 @@ public class PlayerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onArrowPickup(PlayerPickupArrowEvent event) {
-        if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
-            event.setCancelled(true);
-        }
-    }
+    /* Doesn't exist in 1.8? */
+//    @EventHandler(priority = EventPriority.LOWEST)
+//    public void onArrowPickup(PlayerPickupArrowEvent event) {
+//        if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
+//            event.setCancelled(true);
+//        }
+//    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageEvent event) {
@@ -105,6 +108,21 @@ public class PlayerListener implements Listener {
             if (mc2FA.getAuthHandler().needsToAuthenticate(player.getUniqueId())) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getInventory().getTitle() != null && event.getInventory().getTitle().startsWith("MC2FA") && mc2FA.getAuthHandler().needsToAuthenticate(event.getWhoClicked().getUniqueId()) && mc2FA.getAuthHandler().hasGUIOpen(event.getWhoClicked().getUniqueId())) {
+            if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.STAINED_GLASS_PANE && event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().hasDisplayName()) {
+                int num = Integer.parseInt(ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()));
+                mc2FA.getAuthHandler().enterNumGUI((Player) event.getWhoClicked(), num);
+                mc2FA.getAuthHandler().open2FAGUI((Player) event.getWhoClicked());
+            }
+            event.setCancelled(true);
+        } else if (mc2FA.getAuthHandler().needsToAuthenticate(event.getWhoClicked().getUniqueId())) {
+            event.setCancelled(true);
+            event.getWhoClicked().closeInventory();
         }
     }
 
