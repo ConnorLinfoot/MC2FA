@@ -81,11 +81,19 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
         String title = "MC2FA";
         if (currentGUIKeys.containsKey(player.getUniqueId()) && currentGUIKeys.get(player.getUniqueId()).length() > 0) {
             if (currentGUIKeys.get(player.getUniqueId()).length() == 6) {
-                player.closeInventory();
-                player.performCommand("2fa " + currentGUIKeys.get(player.getUniqueId()));
-                return;
+                boolean isValid = validateKey(player.getUniqueId(), Integer.valueOf(currentGUIKeys.get(player.getUniqueId())));
+                if (isValid) {
+                    player.closeInventory();
+                    openGUIs.remove(player.getUniqueId());
+                    player.sendMessage(ChatColor.GREEN + "Success");
+                    return;
+                } else {
+                    currentGUIKeys.remove(player.getUniqueId());
+                    title += " - Invalid";
+                }
+            } else {
+                title += " - " + currentGUIKeys.get(player.getUniqueId());
             }
-            title += " - " + currentGUIKeys.get(player.getUniqueId());
         }
         Inventory gui = Bukkit.createInventory(null, 54, title);
 

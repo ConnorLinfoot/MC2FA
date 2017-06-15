@@ -39,10 +39,13 @@ public class AuthHandler {
     }
 
     public boolean validateKey(UUID uuid, Integer password) {
-        String key = getKey(uuid);
-        if (key != null && new GoogleAuthenticator().authorize(key, password)) {
-            authenticated.add(uuid);
-            return true;
+        try {
+            String key = getKey(uuid);
+            if (key != null && new GoogleAuthenticator().authorize(key, password)) {
+                authenticated.add(uuid);
+                return true;
+            }
+        } catch (Exception ignored) {
         }
         return false;
     }
