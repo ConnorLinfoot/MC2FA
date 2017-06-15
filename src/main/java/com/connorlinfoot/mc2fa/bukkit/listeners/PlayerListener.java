@@ -4,11 +4,14 @@ import com.connorlinfoot.mc2fa.bukkit.MC2FA;
 import com.connorlinfoot.mc2fa.bukkit.handlers.ConfigHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.*;
 
 public class PlayerListener implements Listener {
@@ -20,21 +23,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        boolean is2fa = mc2FA.getAuthHandler().isEnabled(event.getPlayer().getUniqueId());
-        if (is2fa) {
-            if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
-                // Require password from 2FA
-                event.getPlayer().sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.RED + "/2fa");
-            }
-        } else {
-            if (mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.TRUE || (event.getPlayer().isOp() && mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.OP)) {
-                // Force 2FA
-            } else {
-                // Advise of 2FA
-                event.getPlayer().sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.GOLD + "This server supports two-factor authentication and is highly recommended");
-                event.getPlayer().sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.GOLD + "Get started by running /2fa");
-            }
-        }
+        mc2FA.getAuthHandler().playerJoin(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
@@ -45,7 +34,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerMove(PlayerMoveEvent event) {
         if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
-            if (event.getTo().getBlockZ() != event.getFrom().getBlockZ() || event.getTo().getBlockX() != event.getFrom().getBlockX() || event.getTo().getBlockY() != event.getFrom().getBlockY()) {
+            if (event.getTo().getBlockZ() != event.getFrom().getBlockZ() || event.getTo().getBlockX() != event.getFrom().getBlockX()) {
                 event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
                 event.setTo(event.getFrom());
             }
@@ -96,6 +85,26 @@ public class PlayerListener implements Listener {
     public void onArrowPickup(PlayerPickupArrowEvent event) {
         if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if (mc2FA.getAuthHandler().needsToAuthenticate(player.getUniqueId())) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Player) {
+            Player player = (Player) event.getDamager();
+            if (mc2FA.getAuthHandler().needsToAuthenticate(player.getUniqueId())) {
+                event.setCancelled(true);
+            }
         }
     }
 

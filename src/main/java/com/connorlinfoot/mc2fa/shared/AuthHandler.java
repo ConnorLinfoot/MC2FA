@@ -8,9 +8,20 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class AuthHandler {
+    private HashMap<UUID, AuthState> authStates = new HashMap<>();
     private ArrayList<UUID> authenticated = new ArrayList<>();
     private HashMap<UUID, String> pendingKeys = new HashMap<>();
     private HashMap<UUID, String> keys = new HashMap<>();
+
+    public enum AuthState {
+        DISABLED, PENDING_SETUP, PENDING_LOGIN, APPROVED;
+    }
+
+    public AuthState getState(UUID uuid) {
+        if (authStates.containsKey(uuid))
+            return authStates.get(uuid);
+        return null;
+    }
 
     public boolean isEnabled(UUID uuid) {
         return keys.containsKey(uuid);
@@ -69,6 +80,10 @@ public class AuthHandler {
 
     public boolean needsToAuthenticate(UUID uuid) {
         return isEnabled(uuid) && !authenticated.contains(uuid);
+    }
+
+    public void playerJoin(UUID uuid) {
+
     }
 
     public void playerQuit(UUID uuid) {

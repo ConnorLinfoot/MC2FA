@@ -46,7 +46,13 @@ public class MessageHandler extends com.connorlinfoot.mc2fa.shared.MessageHandle
             messagesConfig.set("Prefix", "&7[&bMC2FA&7]");
 
         if (!messagesConfig.isSet("Validate"))
-            messagesConfig.set("Validate", "&4Please validate your account with two-factor authentication");
+            messagesConfig.set("Validate", "&cPlease validate your account with two-factor authentication");
+
+        if (!messagesConfig.isSet("Invalid Key"))
+            messagesConfig.set("Invalid Key", "&cThe key you entered was not valid, please try again");
+
+        if (!messagesConfig.isSet("Setup Success"))
+            messagesConfig.set("Setup Success", "&aYou have successfully setup two-factor authentication");
 
         try {
             messagesConfig.save(messagesFile);

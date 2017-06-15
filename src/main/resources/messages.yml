@@ -4,4 +4,6 @@
 # ------------------------------------------
 
 Prefix: "&7[&bMC2FA&7]"
-Validate: "&4Please validate your account with two-factor authentication"
+Validate: "&cPlease validate your account with two-factor authentication"
+Invalid Key: "&cThe key you entered was not valid, please try again"
+Setup Success: "&aYou have successfully setup two-factor authentication"

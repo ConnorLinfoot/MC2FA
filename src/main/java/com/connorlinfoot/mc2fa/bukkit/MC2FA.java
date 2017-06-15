@@ -1,11 +1,11 @@
 package com.connorlinfoot.mc2fa.bukkit;
 
+import com.connorlinfoot.mc2fa.bukkit.handlers.AuthHandler;
 import com.connorlinfoot.mc2fa.bukkit.handlers.CommandHandler;
 import com.connorlinfoot.mc2fa.bukkit.handlers.ConfigHandler;
 import com.connorlinfoot.mc2fa.bukkit.handlers.MessageHandler;
 import com.connorlinfoot.mc2fa.bukkit.listeners.PlayerListener;
 import com.connorlinfoot.mc2fa.bukkit.utils.MCStats;
-import com.connorlinfoot.mc2fa.shared.AuthHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,7 +21,7 @@ public class MC2FA extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
         configHandler = new ConfigHandler(this);
-        authHandler = new AuthHandler();
+        authHandler = new AuthHandler(this);
         messageHandler = new MessageHandler(this);
 
         if (getConfig().getBoolean("MCStats", true)) {
