@@ -126,4 +126,29 @@ public class PlayerListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
+            if (mc2FA.getConfigHandler().isCommandsDisabled()) {
+                String[] args = event.getMessage().substring(1).split("\\s+");
+                if (args.length > 0) {
+                    String command = args[0];
+                    if (!mc2FA.getConfigHandler().getWhitelistedCommands().contains(command)) {
+                        event.setCancelled(true);
+                        event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
+                    }
+                }
+            } else {
+                String[] args = event.getMessage().substring(1).split("\\s+");
+                if (args.length > 0) {
+                    String command = args[0];
+                    if (mc2FA.getConfigHandler().getBlacklistedCommands().contains(command)) {
+                        event.setCancelled(true);
+                        event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
+                    }
+                }
+            }
+        }
+    }
+
 }

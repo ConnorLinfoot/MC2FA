@@ -37,6 +37,11 @@ public class ConfigHandler {
 
         if (config.isSet("Whitelisted Commands"))
             whitelistedCommands = config.getStringList("Whitelisted Commands");
+        whitelistedCommands.add("2fa");
+        whitelistedCommands.add("twofactorauth");
+        whitelistedCommands.add("twofactorauthentication");
+        whitelistedCommands.add("twofa");
+        whitelistedCommands.add("tfa");
 
         if (config.isSet("Blacklisted Commands"))
             blacklistedCommands = config.getStringList("Blacklisted Commands");
