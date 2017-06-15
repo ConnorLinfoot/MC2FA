@@ -1,8 +1,5 @@
 # MC2FA v${project.version} Configuration
 
-# Whether or not 2FA should be enabled
-Enabled: true
-
 # Whether or not MC2FA should report back stats to MCStats.xyz
 MCStats: true
 
