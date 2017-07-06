@@ -8,6 +8,7 @@ import com.connorlinfoot.mc2fa.bukkit.listeners.PlayerListener;
 import com.connorlinfoot.mc2fa.bukkit.utils.MCStats;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -30,6 +31,12 @@ public class MC2FA extends JavaPlugin {
                 mcstats.start();
             } catch (IOException e) {
                 // Failed to submit the stats :-(
+            }
+        }
+
+        if (!Bukkit.getOnlinePlayers().isEmpty()) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                getAuthHandler().playerJoin(player.getUniqueId());
             }
         }
 

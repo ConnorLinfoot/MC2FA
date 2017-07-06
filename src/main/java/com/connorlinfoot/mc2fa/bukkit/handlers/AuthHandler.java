@@ -1,6 +1,7 @@
 package com.connorlinfoot.mc2fa.bukkit.handlers;
 
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
+import com.connorlinfoot.mc2fa.bukkit.storage.FlatStorage;
 import com.connorlinfoot.mc2fa.bukkit.utils.ImageRenderer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,6 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.map.MapView;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,11 +22,20 @@ import java.util.UUID;
 public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
     private MC2FA mc2FA;
     private ArrayList<UUID> openGUIs = new ArrayList<>();
-    private HashMap<UUID, ArrayList<ItemStack>> heldItems = new HashMap<>();
     private HashMap<UUID, String> currentGUIKeys = new HashMap<>();
 
     public AuthHandler(MC2FA mc2FA) {
         this.mc2FA = mc2FA;
+        switch (mc2FA.getConfigHandler().getKeyStorage()) {
+            default:
+            case FLAT:
+                this.storageHandler = new FlatStorage(new File(mc2FA.getDataFolder(), "data.yml"));
+                break;
+            case MYSQL:
+                // SoonTM
+                Bukkit.getLogger().warning("How? O.o");
+                break;
+        }
     }
 
     public void giveQRItem(MC2FA mc2FA, Player player) {
@@ -43,16 +54,8 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
                     mapMeta.setDisplayName(ChatColor.GOLD + "QR Code");
                     mapItem.setItemMeta(mapMeta);
 
-                    // Clear inventory into "heldItems"
-                    ArrayList<ItemStack> items = new ArrayList<>();
-                    player.getInventory().forEach(itemStack -> {
-                        items.add(itemStack);
-                        if (itemStack != null)
-                            player.getInventory().remove(itemStack);
-                    });
-                    heldItems.put(player.getUniqueId(), items);
                     player.getInventory().addItem(mapItem);
-                    player.getInventory().setHeldItemSlot(0);
+//                    player.getInventory().setHeldItemSlot(0);
                     player.sendMessage(messageHandler.getPrefix() + ChatColor.GREEN + "Please use the QR code given to setup two-factor authentication");
                     player.sendMessage(messageHandler.getPrefix() + ChatColor.GREEN + "Please validate by entering your key: /2fa <key>");
                 } catch (IOException e) {
@@ -61,20 +64,6 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
                 }
             }
         }.runTaskAsynchronously(mc2FA);
-    }
-
-    public void giveItemsBack(Player player) {
-        if (!heldItems.containsKey(player.getUniqueId()))
-            return;
-        player.getInventory().remove(0);
-        ArrayList<ItemStack> items = heldItems.get(player.getUniqueId());
-        final int[] i = {0};
-        items.forEach(itemStack -> {
-            if (itemStack != null)
-                player.getInventory().setItem(i[0], itemStack);
-            i[0]++;
-        });
-        heldItems.remove(player.getUniqueId());
     }
 
     public void open2FAGUI(Player player) {
@@ -135,16 +124,26 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
         if (player == null || !player.isOnline()) {
             return;
         }
+
+        // Load auth state
+        if (getStorageHandler().getKey(uuid) != null) {
+            authStates.put(uuid, AuthState.PENDING_LOGIN);
+        } else {
+            authStates.put(uuid, AuthState.DISABLED);
+        }
+
         boolean is2fa = isEnabled(uuid);
         if (is2fa) {
             if (needsToAuthenticate(uuid)) {
                 // Require password from 2FA
-                player.sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.RED + "/2fa");
+                player.sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.RED + "You must authenticate using /2fa");
                 Bukkit.getScheduler().runTaskLater(mc2FA, () -> open2FAGUI(player), 5L);
             }
         } else {
             if (mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.TRUE || (player.isOp() && mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.OP)) {
                 // Force 2FA
+                mc2FA.getAuthHandler().createKey(player.getUniqueId());
+                mc2FA.getAuthHandler().giveQRItem(mc2FA, player);
             } else {
                 // Advise of 2FA
                 player.sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.GOLD + "This server supports two-factor authentication and is highly recommended");
