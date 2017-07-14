@@ -4,6 +4,7 @@ import com.connorlinfoot.mc2fa.bukkit.MC2FA;
 import com.google.common.io.ByteStreams;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.*;
 
@@ -25,7 +26,11 @@ public class MessageHandler extends com.connorlinfoot.mc2fa.shared.MessageHandle
     }
 
     public String getMessage(String message) {
-        return getPrefix() + ChatColor.translateAlternateColorCodes('&', messagesConfig.getString(message, "&4Unknown message"));
+        return getPrefix() + ChatColor.translateAlternateColorCodes('&', messagesConfig.getString(message, message));
+    }
+
+    public void sendMessage(Player player, String message) {
+        player.sendMessage(getMessage(message));
     }
 
     public void loadConfiguration() {

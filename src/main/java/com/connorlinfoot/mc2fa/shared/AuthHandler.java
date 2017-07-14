@@ -13,7 +13,7 @@ public abstract class AuthHandler {
     private HashMap<UUID, String> pendingKeys = new HashMap<>();
 
     public enum AuthState {
-        DISABLED, PENDING_SETUP, PENDING_LOGIN, AUTHENTICATED;
+        LOADING, DISABLED, PENDING_SETUP, PENDING_LOGIN, AUTHENTICATED
     }
 
     public AuthState getState(UUID uuid) {
