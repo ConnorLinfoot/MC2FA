@@ -42,7 +42,7 @@ public class MC2FA extends JavaPlugin {
 
         getServer().getPluginCommand("2fa").setExecutor(new CommandHandler(this));
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "MC2FA v" + getDescription().getVersion() + " has been enabled");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "MC2FA v" + getDescription().getVersion() + " (Bukkit) has been enabled");
     }
 
     public void onDisable() {
