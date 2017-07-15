@@ -23,7 +23,7 @@ public class MessageHandler extends com.connorlinfoot.mc2fa.shared.MessageHandle
 
     public String getMessage(String message) {
 //        return getPrefix() + ChatColor.translateAlternateColorCodes('&', messagesConfig.getString(message, message));
-        return "";
+        return message;
     }
 
     public void sendMessage(ProxiedPlayer player, String message) {

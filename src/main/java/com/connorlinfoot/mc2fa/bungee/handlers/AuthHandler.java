@@ -17,6 +17,9 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
         switch (mc2FA.getConfigHandler().getKeyStorage()) {
             default:
             case FLAT:
+                if (!mc2FA.getDataFolder().exists()) {
+                    mc2FA.getDataFolder().mkdirs();
+                }
                 this.storageHandler = new FlatStorage(new File(mc2FA.getDataFolder(), "data.yml"));
                 break;
             case MYSQL:
@@ -36,7 +39,7 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
     public void playerJoin(UUID uuid) {
         super.playerJoin(uuid);
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
-        if (player == null || !player.isConnected()) {
+        if (player == null) {
             return;
         }
 

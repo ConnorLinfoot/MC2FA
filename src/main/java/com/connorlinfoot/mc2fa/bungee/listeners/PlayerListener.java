@@ -1,7 +1,7 @@
 package com.connorlinfoot.mc2fa.bungee.listeners;
 
 import com.connorlinfoot.mc2fa.bungee.MC2FA;
-import net.md_5.bungee.api.event.PreLoginEvent;
+import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -20,8 +20,8 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(PreLoginEvent event) {
-        mc2FA.getAuthHandler().playerJoin(event.getConnection().getUniqueId());
+    public void onPlayerJoin(PostLoginEvent event) {
+        mc2FA.getAuthHandler().playerJoin(event.getPlayer().getUniqueId());
     }
 
 }

@@ -19,7 +19,7 @@ public abstract class AuthHandler {
     public AuthState getState(UUID uuid) {
         if (authStates.containsKey(uuid))
             return authStates.get(uuid);
-        return null;
+        return AuthState.LOADING;
     }
 
     public boolean isEnabled(UUID uuid) {

@@ -2,6 +2,7 @@ package com.connorlinfoot.mc2fa.bungee;
 
 import com.connorlinfoot.mc2fa.bungee.bungeeutils.PacketHandler;
 import com.connorlinfoot.mc2fa.bungee.handlers.AuthHandler;
+import com.connorlinfoot.mc2fa.bungee.handlers.CommandHandler;
 import com.connorlinfoot.mc2fa.bungee.handlers.ConfigHandler;
 import com.connorlinfoot.mc2fa.bungee.handlers.MessageHandler;
 import com.connorlinfoot.mc2fa.bungee.listeners.PlayerListener;
@@ -17,16 +18,18 @@ public class MC2FA extends Plugin {
         configHandler = new ConfigHandler(this);
 
         // Check if BungeeUtils exists, if so use the correct auth handler etc
-        Plugin bungeeUtils = getProxy().getPluginManager().getPlugin("BungeeUtils");
-        if (bungeeUtils != null) {
+        try {
+            Class.forName("dev.wolveringer.bungeeutil.player.Player");
+            getLogger().info("Found BungeeUtils, hooking in!");
             authHandler = new com.connorlinfoot.mc2fa.bungee.bungeeutils.AuthHandler(this);
             new PacketHandler(this);
-        } else {
+        } catch (ClassNotFoundException e) {
             authHandler = new AuthHandler(this);
         }
 
         messageHandler = new MessageHandler(this);
 
+        getProxy().getPluginManager().registerCommand(this, new CommandHandler(this));
         getProxy().getPluginManager().registerListener(this, new PlayerListener(this));
         getProxy().getConsole().sendMessage(ChatColor.AQUA + "MC2FA v" + getDescription().getVersion() + " (BungeeCord) has been enabled");
     }
