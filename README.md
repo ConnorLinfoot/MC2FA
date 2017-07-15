@@ -5,6 +5,7 @@ MC2FA is a upcoming **free** two-factor authentication plugin for Bukkit, Spigot
 [![CircleCI](https://circleci.com/gh/ConnorLinfoot/MC2FA/tree/master.svg?style=svg)](https://api.connorlinfoot.com/v1/ci/artifact/MC2FA/latest/download)
 
 ## Features
+- Works with Bukkit, Spigot or BungeeCord
 - Works out of the box, just copy the plugin and restart your server
 - Custom messages/prefixes, make it your own
 - In-game QR display using maps
@@ -13,14 +14,13 @@ MC2FA is a upcoming **free** two-factor authentication plugin for Bukkit, Spigot
 - Disables basic tasks like player movement, block breaking, chat, inventory changes and more
 
 ## TODO
-- BungeeCord support
 - MySQL support
 - Fallback key, allow players to be given a backup key in the case that they lose their 2FA device
 - Admin commands, allow staff to view players with 2FA and disable if needed
 - Auto-allow if on the same IP within a certain time (option)
 
 ## Requirements
-- Bukkit/Spigot 1.8+
+- Bukkit/Spigot/BungeeCord 1.8+
 - Java 8
 
 ## Modes
