@@ -2,27 +2,10 @@ package com.connorlinfoot.mc2fa.bungee.handlers;
 
 import com.connorlinfoot.mc2fa.bungee.MC2FA;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class ConfigHandler {
-    private boolean debug = false;
-    private boolean enabled = true;
-    private boolean commandsDisabled = true;
-    private KeyStorage keyStorage = KeyStorage.FLAT;
-    private Forced forced = Forced.FALSE;
-    private List<String> whitelistedCommands = new ArrayList<>();
-    private List<String> blacklistedCommands = new ArrayList<>();
-
-    public enum KeyStorage {
-        FLAT, MYSQL
-    }
-
-    public enum Forced {
-        TRUE, FALSE, OP
-    }
+public class ConfigHandler extends com.connorlinfoot.mc2fa.shared.ConfigHandler {
 
     public ConfigHandler(MC2FA mc2FA) {
+        super();
 //        FileConfiguration config = mc2FA.getConfig();
 //
 //        if (config.isSet("Debug"))
@@ -63,34 +46,6 @@ public class ConfigHandler {
 //            } catch (Exception ignored) {
 //            }
 //        }
-    }
-
-    public boolean isDebug() {
-        return debug;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public boolean isCommandsDisabled() {
-        return commandsDisabled;
-    }
-
-    public List<String> getWhitelistedCommands() {
-        return whitelistedCommands;
-    }
-
-    public List<String> getBlacklistedCommands() {
-        return blacklistedCommands;
-    }
-
-    public KeyStorage getKeyStorage() {
-        return keyStorage;
-    }
-
-    public Forced getForced() {
-        return forced;
     }
 
 }

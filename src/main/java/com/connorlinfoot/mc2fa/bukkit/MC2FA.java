@@ -22,6 +22,13 @@ public class MC2FA extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
         configHandler = new ConfigHandler(this);
+
+        if (getConfigHandler().getMode() == com.connorlinfoot.mc2fa.shared.ConfigHandler.Mode.UNKNOWN) {
+            getLogger().severe("No mode has been set! MC2FA has not been enabled!");
+            setEnabled(false);
+            return;
+        }
+
         authHandler = new AuthHandler(this);
         messageHandler = new MessageHandler(this);
 

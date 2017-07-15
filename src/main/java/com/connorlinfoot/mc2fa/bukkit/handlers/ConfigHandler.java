@@ -3,25 +3,7 @@ package com.connorlinfoot.mc2fa.bukkit.handlers;
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class ConfigHandler {
-    private boolean debug = false;
-    private boolean enabled = true;
-    private boolean commandsDisabled = true;
-    private KeyStorage keyStorage = KeyStorage.FLAT;
-    private Forced forced = Forced.FALSE;
-    private List<String> whitelistedCommands = new ArrayList<>();
-    private List<String> blacklistedCommands = new ArrayList<>();
-
-    public enum KeyStorage {
-        FLAT, MYSQL
-    }
-
-    public enum Forced {
-        TRUE, FALSE, OP
-    }
+public class ConfigHandler extends com.connorlinfoot.mc2fa.shared.ConfigHandler {
 
     public ConfigHandler(MC2FA mc2FA) {
         FileConfiguration config = mc2FA.getConfig();
@@ -53,6 +35,14 @@ public class ConfigHandler {
             }
         }
 
+        if (config.isSet("Mode")) {
+            try {
+                mode = Mode.valueOf(config.getString("Mode").toUpperCase());
+            } catch (Exception ignored) {
+                mode = Mode.UNKNOWN;
+            }
+        }
+
         if (keyStorage == KeyStorage.MYSQL) {
             mc2FA.getLogger().warning("MySQL storage is not yet supported, reverting to flat file storage");
             keyStorage = KeyStorage.FLAT;
@@ -64,34 +54,6 @@ public class ConfigHandler {
             } catch (Exception ignored) {
             }
         }
-    }
-
-    public boolean isDebug() {
-        return debug;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public boolean isCommandsDisabled() {
-        return commandsDisabled;
-    }
-
-    public List<String> getWhitelistedCommands() {
-        return whitelistedCommands;
-    }
-
-    public List<String> getBlacklistedCommands() {
-        return blacklistedCommands;
-    }
-
-    public KeyStorage getKeyStorage() {
-        return keyStorage;
-    }
-
-    public Forced getForced() {
-        return forced;
     }
 
 }
