@@ -22,10 +22,7 @@ public class FlatStorage extends StorageHandler {
     }
 
     public String getKey(UUID uuid) {
-        if (configuration.isSet(uuid.toString() + ".Key")) {
-            return configuration.getString(uuid.toString() + ".Key");
-        }
-        return null;
+        return configuration.getString(uuid.toString() + ".Key", null);
     }
 
     public void setKey(UUID uuid, String key) {

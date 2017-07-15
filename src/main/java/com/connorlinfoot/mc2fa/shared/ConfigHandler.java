@@ -3,7 +3,7 @@ package com.connorlinfoot.mc2fa.shared;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigHandler {
+public abstract class ConfigHandler {
     protected boolean debug = false;
     protected boolean enabled = true;
     protected boolean commandsDisabled = true;
