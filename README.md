@@ -22,3 +22,9 @@ MC2FA is a upcoming **free** two-factor authentication plugin for Bukkit, Spigot
 ## Requirements
 - Bukkit/Spigot 1.8+
 - Java 8
+
+## Modes
+MC2FA Currently supports 3 modes, these modes are as followed:
+- *Bukkit Mode:* Useful if you only have one Bukkit instance and do not use BungeeCord. Just install the plugin into your Bukkit server.
+- *BungeeGUI Mode:* Useful if you have a BungeeCord network. Requires BungeeUtils and the MC2FA plugin installed to BungeeCord.
+- *Crossover Mode:* Also useful if you have a BungeeCord network. Requires the MC2FA plugin to be installed on the proxy and each Bukkit server. 
