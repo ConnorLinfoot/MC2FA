@@ -82,9 +82,6 @@ public abstract class AuthHandler {
     }
 
     public boolean needsToAuthenticate(UUID uuid) {
-        if (true) {
-            return true;
-        }
         return isEnabled(uuid) && !authStates.get(uuid).equals(AuthState.AUTHENTICATED);
     }
 

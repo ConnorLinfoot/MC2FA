@@ -4,6 +4,7 @@ import com.connorlinfoot.mc2fa.bungee.bungeeutils.PacketHandler;
 import com.connorlinfoot.mc2fa.bungee.handlers.AuthHandler;
 import com.connorlinfoot.mc2fa.bungee.handlers.ConfigHandler;
 import com.connorlinfoot.mc2fa.bungee.handlers.MessageHandler;
+import com.connorlinfoot.mc2fa.bungee.listeners.PlayerListener;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -26,6 +27,7 @@ public class MC2FA extends Plugin {
 
         messageHandler = new MessageHandler(this);
 
+        getProxy().getPluginManager().registerListener(this, new PlayerListener(this));
         getProxy().getConsole().sendMessage(ChatColor.AQUA + "MC2FA v" + getDescription().getVersion() + " (BungeeCord) has been enabled");
     }
 
