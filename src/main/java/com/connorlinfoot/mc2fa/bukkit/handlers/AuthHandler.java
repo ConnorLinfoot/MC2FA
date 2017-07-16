@@ -1,7 +1,6 @@
 package com.connorlinfoot.mc2fa.bukkit.handlers;
 
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
-import com.connorlinfoot.mc2fa.bukkit.events.PlayerStateChangeEvent;
 import com.connorlinfoot.mc2fa.bukkit.storage.FlatStorage;
 import com.connorlinfoot.mc2fa.bukkit.utils.ImageRenderer;
 import org.bukkit.Bukkit;
@@ -170,13 +169,13 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
         if (authState == getState(uuid))
             return;
 
-        Player player = Bukkit.getPlayer(uuid);
-        if (player != null) {
-            PlayerStateChangeEvent event = new PlayerStateChangeEvent(player, authState);
-            Bukkit.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled())
-                return;
-        }
+//        Player player = Bukkit.getPlayer(uuid);
+//        if (player != null) {
+//            PlayerStateChangeEvent event = new PlayerStateChangeEvent(player, authState);
+//            Bukkit.getServer().getPluginManager().callEvent(event);
+//            if (event.isCancelled())
+//                return;
+//        }
 
         authStates.put(uuid, authState);
     }
