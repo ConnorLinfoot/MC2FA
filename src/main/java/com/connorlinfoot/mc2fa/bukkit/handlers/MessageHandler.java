@@ -26,11 +26,18 @@ public class MessageHandler extends com.connorlinfoot.mc2fa.shared.MessageHandle
     }
 
     public String getMessage(String message) {
-        return getPrefix() + ChatColor.translateAlternateColorCodes('&', messagesConfig.getString(message, message));
+        message = messagesConfig.getString(message, message);
+        if (message.isEmpty()) {
+            return "";
+        }
+        return getPrefix() + ChatColor.translateAlternateColorCodes('&', message);
     }
 
     public void sendMessage(Player player, String message) {
-        player.sendMessage(getMessage(message));
+        message = getMessage(message);
+        if (message.isEmpty())
+            return;
+        player.sendMessage(message);
     }
 
     public void loadConfiguration() {
@@ -47,17 +54,15 @@ public class MessageHandler extends com.connorlinfoot.mc2fa.shared.MessageHandle
         }
         messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
 
-        if (!messagesConfig.isSet("Prefix"))
+        if (!messagesConfig.isSet("Prefix")) {
             messagesConfig.set("Prefix", "&7[&bMC2FA&7]");
+        }
 
-        if (!messagesConfig.isSet("Validate"))
-            messagesConfig.set("Validate", "&cPlease validate your account with two-factor authentication");
-
-        if (!messagesConfig.isSet("Invalid Key"))
-            messagesConfig.set("Invalid Key", "&cThe key you entered was not valid, please try again");
-
-        if (!messagesConfig.isSet("Setup Success"))
-            messagesConfig.set("Setup Success", "&aYou have successfully setup two-factor authentication");
+        for (String message : getDefaults()) {
+            if (!messagesConfig.isSet(message)) {
+                messagesConfig.set(message, message);
+            }
+        }
 
         try {
             messagesConfig.save(messagesFile);

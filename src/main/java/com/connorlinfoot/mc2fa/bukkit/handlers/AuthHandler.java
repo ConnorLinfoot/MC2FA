@@ -57,8 +57,8 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
 
                     player.getInventory().addItem(mapItem);
 //                    player.getInventory().setHeldItemSlot(0);
-                    player.sendMessage(messageHandler.getPrefix() + ChatColor.GREEN + "Please use the QR code given to setup two-factor authentication");
-                    player.sendMessage(messageHandler.getPrefix() + ChatColor.GREEN + "Please validate by entering your key: /2fa <key>");
+                    messageHandler.sendMessage(player, "&aPlease use the QR code given to setup two-factor authentication");
+                    messageHandler.sendMessage(player, "&aPlease validate by entering your key: /2fa <key>");
                 } catch (IOException e) {
                     e.printStackTrace();
                     player.sendMessage(ChatColor.RED + "An error occurred! Is the URL correct?");
@@ -136,9 +136,9 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
         boolean is2fa = isEnabled(uuid);
         if (is2fa) {
             if (needsToAuthenticate(uuid)) {
-                // Require password from 2FA
+                // Require password from 2FA // TODO Made the messages nicer
                 player.sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.RED + "You must authenticate using /2fa");
-                Bukkit.getScheduler().runTaskLater(mc2FA, () -> open2FAGUI(player), 5L);
+                Bukkit.getScheduler().runTaskLater(mc2FA, () -> open2FAGUI(player), 5L); // TODO needs to be an option
             }
         } else {
             if (mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.TRUE || (player.isOp() && mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.OP)) {
@@ -147,8 +147,8 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
                 mc2FA.getAuthHandler().giveQRItem(mc2FA, player);
             } else {
                 // Advise of 2FA
-                player.sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.GOLD + "This server supports two-factor authentication and is highly recommended");
-                player.sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.GOLD + "Get started by running /2fa");
+                mc2FA.getMessageHandler().sendMessage(player, "&6This server supports two-factor authentication and is highly recommended");
+                mc2FA.getMessageHandler().sendMessage(player, "&6Get started by running /2fa");
             }
         }
     }
