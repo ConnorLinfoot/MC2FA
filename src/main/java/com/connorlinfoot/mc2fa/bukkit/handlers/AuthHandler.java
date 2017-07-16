@@ -31,6 +31,7 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
             case FLAT:
                 this.storageHandler = new FlatStorage(new File(mc2FA.getDataFolder(), "data.yml"));
                 break;
+            case SQLITE:
             case MYSQL:
                 // SoonTM
                 Bukkit.getLogger().warning("How? O.o");

@@ -18,7 +18,7 @@ Blacklisted Commands:
   - "op"
   - "spawn"
 
-# Key storage, either FLAT or MYSQL - MySQL is not yet supported
+# Key storage, either FLAT, SQLite or MYSQL - SQLite and MySQL are not yet supported
 Key Storage: FLAT
 
 # If the above is MYSQL please enter MySQL connection details (Coming Soon)

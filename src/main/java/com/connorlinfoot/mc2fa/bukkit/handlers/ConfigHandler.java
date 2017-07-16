@@ -16,7 +16,7 @@ public class ConfigHandler {
     private List<String> blacklistedCommands = new ArrayList<>();
 
     public enum KeyStorage {
-        FLAT, MYSQL
+        FLAT, SQLITE, MYSQL
     }
 
     public enum Forced {
@@ -53,7 +53,10 @@ public class ConfigHandler {
             }
         }
 
-        if (keyStorage == KeyStorage.MYSQL) {
+        if (keyStorage == KeyStorage.SQLITE) {
+            mc2FA.getLogger().warning("SQLite storage is not yet supported, reverting to flat file storage");
+            keyStorage = KeyStorage.FLAT;
+        } else if (keyStorage == KeyStorage.MYSQL) {
             mc2FA.getLogger().warning("MySQL storage is not yet supported, reverting to flat file storage");
             keyStorage = KeyStorage.FLAT;
         }
