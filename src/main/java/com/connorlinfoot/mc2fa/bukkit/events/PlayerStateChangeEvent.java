@@ -21,6 +21,10 @@ public class PlayerStateChangeEvent extends Event implements Cancellable {
         return new HandlerList();
     }
 
+    public static HandlerList getHandlerList() {
+        return new HandlerList();
+    }
+
     @Override
     public boolean isCancelled() {
         return canceled;
