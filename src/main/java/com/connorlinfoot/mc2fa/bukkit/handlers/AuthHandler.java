@@ -41,7 +41,7 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
     }
 
     public void giveQRItem(MC2FA mc2FA, Player player) {
-        String url = getQRCodeURL(player.getUniqueId());
+        String url = getQRCodeURL(mc2FA.getConfigHandler().getQrCodeURL(), player.getUniqueId());
         final MessageHandler messageHandler = mc2FA.getMessageHandler();
         new BukkitRunnable() {
             @Override
@@ -183,13 +183,13 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
     }
 
     @Override
-    public String getQRCodeURL(UUID uuid) {
+    public String getQRCodeURL(String urlTemplate, UUID uuid) {
         String label = "MC2FA";
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
             label = player.getName() + ":" + label;
         }
-        return super.getQRCodeURL(uuid).replaceAll("%%label%%", label);
+        return super.getQRCodeURL(urlTemplate, uuid).replaceAll("%%label%%", label);
     }
 
     public boolean isQRCodeItem(ItemStack itemStack) {

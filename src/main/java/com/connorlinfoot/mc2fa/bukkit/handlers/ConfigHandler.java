@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigHandler {
+    private String qrCodeURL = "https://www.google.com/chart?chs=128x128&chld=M%%7C0&cht=qr&chl=otpauth://totp/%%label%%?secret=%%key%%";
     private boolean debug = false;
     private boolean enabled = true;
     private boolean commandsDisabled = true;
@@ -67,6 +68,10 @@ public class ConfigHandler {
             } catch (Exception ignored) {
             }
         }
+
+        if (config.isSet("QR Code URL")) {
+            qrCodeURL = config.getString("QR Code URL");
+        }
     }
 
     public boolean isDebug() {
@@ -95,6 +100,10 @@ public class ConfigHandler {
 
     public Forced getForced() {
         return forced;
+    }
+
+    public String getQrCodeURL() {
+        return qrCodeURL;
     }
 
 }

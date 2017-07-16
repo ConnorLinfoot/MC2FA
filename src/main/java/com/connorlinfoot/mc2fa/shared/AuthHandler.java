@@ -73,8 +73,7 @@ public abstract class AuthHandler {
         return pendingKeys.get(uuid);
     }
 
-    public String getQRCodeURL(UUID uuid) {
-        String urlTemplate = "https://www.google.com/chart?chs=128x128&chld=M%%7C0&cht=qr&chl=otpauth://totp/%%label%%?secret=%%key%%";
+    public String getQRCodeURL(String urlTemplate, UUID uuid) {
         String key = getPendingKey(uuid);
         if (key == null)
             return null;
