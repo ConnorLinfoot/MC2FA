@@ -176,6 +176,7 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
             mc2FA.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled())
                 return;
+            authState = event.getAuthState();
         }
 
         authStates.put(uuid, authState);
