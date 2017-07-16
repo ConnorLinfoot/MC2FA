@@ -27,16 +27,11 @@ public class MessageHandler extends com.connorlinfoot.mc2fa.shared.MessageHandle
 
     public String getMessage(String message) {
         message = messagesConfig.getString(message, message);
-//        if (message.isEmpty()) {
-//            return "";
-//        }
         return getPrefix() + ChatColor.translateAlternateColorCodes('&', message);
     }
 
     public void sendMessage(Player player, String message) {
         message = getMessage(message);
-//        if (message.isEmpty())
-//            return;
         player.sendMessage(message);
     }
 

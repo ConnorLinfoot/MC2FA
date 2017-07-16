@@ -94,14 +94,6 @@ public class PlayerListener implements Listener {
         }
     }
 
-    /* Doesn't exist in 1.8? */
-//    @EventHandler(priority = EventPriority.LOWEST)
-//    public void onArrowPickup(PlayerPickupArrowEvent event) {
-//        if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
-//            event.setCancelled(true);
-//        }
-//    }
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
