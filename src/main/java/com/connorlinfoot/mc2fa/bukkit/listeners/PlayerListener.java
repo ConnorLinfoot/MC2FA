@@ -1,6 +1,8 @@
 package com.connorlinfoot.mc2fa.bukkit.listeners;
 
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
+import com.connorlinfoot.mc2fa.bukkit.events.PlayerStateChangeEvent;
+import com.connorlinfoot.mc2fa.shared.AuthHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -24,6 +26,10 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         mc2FA.getAuthHandler().playerJoin(event.getPlayer().getUniqueId());
+        if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
+            event.getPlayer().setWalkSpeed(0);
+            event.getPlayer().setFlySpeed(0);
+        }
     }
 
     @EventHandler
@@ -146,6 +152,14 @@ public class PlayerListener implements Listener {
                     }
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onAuthState(PlayerStateChangeEvent event) {
+        if (event.getAuthState().equals(AuthHandler.AuthState.AUTHENTICATED)) {
+            event.getPlayer().setFlySpeed((float) 0.1);
+            event.getPlayer().setWalkSpeed((float) 0.2);
         }
     }
 

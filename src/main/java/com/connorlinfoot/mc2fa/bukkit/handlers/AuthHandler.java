@@ -1,6 +1,7 @@
 package com.connorlinfoot.mc2fa.bukkit.handlers;
 
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
+import com.connorlinfoot.mc2fa.bukkit.events.PlayerStateChangeEvent;
 import com.connorlinfoot.mc2fa.bukkit.storage.FlatStorage;
 import com.connorlinfoot.mc2fa.bukkit.utils.ImageRenderer;
 import org.bukkit.Bukkit;
@@ -128,9 +129,9 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
 
         // Load auth state
         if (getStorageHandler().getKey(uuid) != null) {
-            authStates.put(uuid, AuthState.PENDING_LOGIN);
+            changeState(uuid, AuthState.PENDING_LOGIN);
         } else {
-            authStates.put(uuid, AuthState.DISABLED);
+            changeState(uuid, AuthState.DISABLED);
         }
 
         boolean is2fa = isEnabled(uuid);
@@ -163,6 +164,21 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
             openGUIs.remove(uuid);
         if (currentGUIKeys.containsKey(uuid))
             currentGUIKeys.remove(uuid);
+    }
+
+    public void changeState(UUID uuid, AuthState authState) {
+        if (authState == getState(uuid))
+            return;
+
+        Player player = Bukkit.getPlayer(uuid);
+        if (player != null) {
+            PlayerStateChangeEvent event = new PlayerStateChangeEvent(player, authState);
+            Bukkit.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled())
+                return;
+        }
+
+        authStates.put(uuid, authState);
     }
 
 }

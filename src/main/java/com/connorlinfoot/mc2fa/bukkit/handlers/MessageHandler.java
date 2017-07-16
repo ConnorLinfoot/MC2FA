@@ -1,12 +1,12 @@
 package com.connorlinfoot.mc2fa.bukkit.handlers;
 
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
-import com.google.common.io.ByteStreams;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
 public class MessageHandler extends com.connorlinfoot.mc2fa.shared.MessageHandler {
     private MC2FA mc2FA;
@@ -41,13 +41,13 @@ public class MessageHandler extends com.connorlinfoot.mc2fa.shared.MessageHandle
     }
 
     public void loadConfiguration() {
+        if (!mc2FA.getDataFolder().exists()) {
+            mc2FA.getDataFolder().mkdirs();
+        }
         File messagesFile = new File(mc2FA.getDataFolder(), "messages.yml");
         if (!messagesFile.exists()) {
             try {
                 messagesFile.createNewFile();
-                InputStream inputStream = mc2FA.getResource("messages.yml");
-                OutputStream outputStream = new FileOutputStream(messagesFile);
-                ByteStreams.copy(inputStream, outputStream);
             } catch (IOException e) {
                 e.printStackTrace();
             }
