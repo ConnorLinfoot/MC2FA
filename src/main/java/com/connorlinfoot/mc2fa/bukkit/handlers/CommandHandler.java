@@ -4,7 +4,6 @@ import com.connorlinfoot.mc2fa.bukkit.MC2FA;
 import com.connorlinfoot.mc2fa.shared.AuthHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -59,9 +58,8 @@ public class CommandHandler implements CommandExecutor {
                 if (approved) {
                     messageHandler.sendMessage(player, "&aYou have successfully setup two-factor authentication");
                     player.getInventory().forEach(itemStack -> {
-                        if (itemStack != null && itemStack.getType() == Material.MAP && itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName() && itemStack.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "QR Code")) {
+                        if (mc2FA.getAuthHandler().isQRCodeItem(itemStack))
                             player.getInventory().remove(itemStack);
-                        }
                     });
                 } else {
                     messageHandler.sendMessage(player, "&cThe key you entered was not valid, please try again");
@@ -72,7 +70,8 @@ public class CommandHandler implements CommandExecutor {
             if (args.length == 0 || (args.length > 0 && args[0].equalsIgnoreCase("help"))) {
                 sender.sendMessage(ChatColor.AQUA + "--------------- " + ChatColor.GOLD + "MC2FA" + ChatColor.AQUA + " ---------------");
                 if (mc2FA.getAuthHandler().isEnabled(((Player) sender).getUniqueId())) {
-                    sender.sendMessage(ChatColor.GOLD + "/2fa reset <key> " + ChatColor.YELLOW + "Disables two-factor authentication");
+//                    sender.sendMessage(ChatColor.GOLD + "/2fa reset <key> " + ChatColor.YELLOW + "Disables two-factor authentication");
+                    sender.sendMessage(ChatColor.GOLD + "/2fa reset " + ChatColor.YELLOW + "Disables two-factor authentication");
                 } else {
                     sender.sendMessage(ChatColor.GOLD + "/2fa enable " + ChatColor.YELLOW + "Enables two-factor authentication");
                 }
@@ -100,10 +99,7 @@ public class CommandHandler implements CommandExecutor {
                     case "false":
                     case "disable":
                     case "reset":
-                        if (true) {
-                            sender.sendMessage(">.>");
-                            return true;
-                        }
+                        // TODO make this require the key to reset, makes it more secure!
                         if (mc2FA.getAuthHandler().isEnabled(player.getUniqueId())) {
                             mc2FA.getAuthHandler().reset(player.getUniqueId());
                             messageHandler.sendMessage(player, "&aYour 2FA has been reset");

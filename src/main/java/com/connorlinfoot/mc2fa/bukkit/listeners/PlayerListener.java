@@ -5,6 +5,7 @@ import com.connorlinfoot.mc2fa.bukkit.events.PlayerStateChangeEvent;
 import com.connorlinfoot.mc2fa.shared.AuthHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,6 +15,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 
 public class PlayerListener implements Listener {
@@ -27,9 +30,8 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         mc2FA.getAuthHandler().playerJoin(event.getPlayer().getUniqueId());
         event.getPlayer().getInventory().forEach(itemStack -> {
-            if (itemStack != null && itemStack.getType() == Material.MAP && itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName() && itemStack.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "QR Code")) {
+            if (mc2FA.getAuthHandler().isQRCodeItem(itemStack))
                 event.getPlayer().getInventory().remove(itemStack);
-            }
         });
         if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
             event.getPlayer().setWalkSpeed(0);
@@ -133,6 +135,19 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
             event.getWhoClicked().closeInventory();
         }
+
+        if ((mc2FA.getAuthHandler().isQRCodeItem(event.getCurrentItem()) || mc2FA.getAuthHandler().isQRCodeItem(event.getCursor())) && (event.getInventory().getType() != InventoryType.PLAYER)) {
+            event.setCancelled(true);
+        } else if (event.getHotbarButton() > -1 && mc2FA.getAuthHandler().isQRCodeItem(event.getWhoClicked().getInventory().getItem(event.getHotbarButton()))) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onItemMove(InventoryMoveItemEvent event) {
+        if (mc2FA.getAuthHandler().isQRCodeItem(event.getItem()) && event.getDestination().getType() != InventoryType.PLAYER) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -156,6 +171,15 @@ public class PlayerListener implements Listener {
                         mc2FA.getMessageHandler().sendMessage(event.getPlayer(), "&cPlease validate your account with two-factor authentication");
                     }
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onItemFrameInteract(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked() instanceof ItemFrame) {
+            if (mc2FA.getAuthHandler().isQRCodeItem(event.getPlayer().getItemInHand())) {
+                event.setCancelled(true);
             }
         }
     }

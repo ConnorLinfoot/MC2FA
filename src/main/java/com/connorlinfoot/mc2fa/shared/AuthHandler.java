@@ -74,11 +74,11 @@ public abstract class AuthHandler {
     }
 
     public String getQRCodeURL(UUID uuid) {
-        String urlTemplate = "https://www.google.com/chart?chs=128x128&chld=M%%7C0&cht=qr&chl=otpauth://totp/MC2FA:MC2FA?secret=%key%";
+        String urlTemplate = "https://www.google.com/chart?chs=128x128&chld=M%%7C0&cht=qr&chl=otpauth://totp/%%label%%?secret=%%key%%";
         String key = getPendingKey(uuid);
         if (key == null)
             return null;
-        return urlTemplate.replaceAll("%key%", key);
+        return urlTemplate.replaceAll("%%key%%", key);
     }
 
     public boolean needsToAuthenticate(UUID uuid) {

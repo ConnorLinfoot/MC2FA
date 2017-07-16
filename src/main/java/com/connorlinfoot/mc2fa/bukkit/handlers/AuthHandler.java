@@ -182,4 +182,18 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
         authStates.put(uuid, authState);
     }
 
+    @Override
+    public String getQRCodeURL(UUID uuid) {
+        String label = "MC2FA";
+        Player player = Bukkit.getPlayer(uuid);
+        if (player != null) {
+            label = player.getName() + ":" + label;
+        }
+        return super.getQRCodeURL(uuid).replaceAll("%%label%%", label);
+    }
+
+    public boolean isQRCodeItem(ItemStack itemStack) {
+        return itemStack != null && itemStack.getType() == Material.MAP && itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName() && itemStack.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "QR Code");
+    }
+
 }
