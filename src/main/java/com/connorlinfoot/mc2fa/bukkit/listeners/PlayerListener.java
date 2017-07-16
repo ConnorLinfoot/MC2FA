@@ -26,6 +26,11 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         mc2FA.getAuthHandler().playerJoin(event.getPlayer().getUniqueId());
+        event.getPlayer().getInventory().forEach(itemStack -> {
+            if (itemStack != null && itemStack.getType() == Material.MAP && itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName() && itemStack.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "QR Code")) {
+                event.getPlayer().getInventory().remove(itemStack);
+            }
+        });
         if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
             event.getPlayer().setWalkSpeed(0);
             event.getPlayer().setFlySpeed(0);

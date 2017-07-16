@@ -70,8 +70,15 @@ public class CommandHandler implements CommandExecutor {
         } else {
 
             if (args.length == 0 || (args.length > 0 && args[0].equalsIgnoreCase("help"))) {
-                sender.sendMessage(ChatColor.AQUA + "---------- " + ChatColor.GOLD + "MC2FA" + ChatColor.AQUA + " ----------");
-                sender.sendMessage(ChatColor.YELLOW + "// TODO");
+                sender.sendMessage(ChatColor.AQUA + "--------------- " + ChatColor.GOLD + "MC2FA" + ChatColor.AQUA + " ---------------");
+                if (mc2FA.getAuthHandler().isEnabled(((Player) sender).getUniqueId())) {
+                    sender.sendMessage(ChatColor.GOLD + "/2fa reset <key> " + ChatColor.YELLOW + "Disables two-factor authentication");
+                } else {
+                    sender.sendMessage(ChatColor.GOLD + "/2fa enable " + ChatColor.YELLOW + "Enables two-factor authentication");
+                }
+                if (sender.isOp()) {
+                    sender.sendMessage(ChatColor.GOLD + "/2fa debug " + ChatColor.YELLOW + "Debug two-factor authentication");
+                }
             } else {
                 switch (args[0].toLowerCase()) {
                     default:
@@ -80,6 +87,7 @@ public class CommandHandler implements CommandExecutor {
                     case "enable":
                     case "on":
                     case "true":
+                    case "activate":
                         if (mc2FA.getAuthHandler().getState(player.getUniqueId()).equals(AuthHandler.AuthState.DISABLED)) {
                             mc2FA.getAuthHandler().createKey(player.getUniqueId());
                             mc2FA.getAuthHandler().giveQRItem(mc2FA, player);
@@ -87,7 +95,15 @@ public class CommandHandler implements CommandExecutor {
                             messageHandler.sendMessage(player, "&cYou are already setup with 2FA");
                         }
                         break;
+                    case "deactivate":
+                    case "off":
+                    case "false":
+                    case "disable":
                     case "reset":
+                        if (true) {
+                            sender.sendMessage(">.>");
+                            return true;
+                        }
                         if (mc2FA.getAuthHandler().isEnabled(player.getUniqueId())) {
                             mc2FA.getAuthHandler().reset(player.getUniqueId());
                             messageHandler.sendMessage(player, "&aYour 2FA has been reset");

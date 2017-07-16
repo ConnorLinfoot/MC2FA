@@ -173,7 +173,7 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
             PlayerStateChangeEvent event = new PlayerStateChangeEvent(player, authState);
-            Bukkit.getServer().getPluginManager().callEvent(event);
+            mc2FA.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled())
                 return;
         }

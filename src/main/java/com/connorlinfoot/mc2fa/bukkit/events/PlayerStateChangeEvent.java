@@ -7,22 +7,24 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 public class PlayerStateChangeEvent extends Event implements Cancellable {
+    private static final HandlerList handlers = new HandlerList();
     private Player player;
     private AuthHandler.AuthState authState;
     private boolean canceled = false;
 
     public PlayerStateChangeEvent(Player player, AuthHandler.AuthState authState) {
+        super();
         this.player = player;
         this.authState = authState;
     }
 
     @Override
     public HandlerList getHandlers() {
-        return new HandlerList();
+        return handlers;
     }
 
     public static HandlerList getHandlerList() {
-        return new HandlerList();
+        return handlers;
     }
 
     @Override
