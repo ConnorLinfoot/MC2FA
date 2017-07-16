@@ -19,7 +19,11 @@ public abstract class MessageHandler {
             "&cYou are already setup with 2FA",
             "&aYour 2FA has been reset",
             "&cYou are not setup with 2FA",
-            "&cYou do not have permission to run this command"
+            "&cYou do not have permission to run this command",
+            "&aPlease use the QR code given to setup two-factor authentication",
+            "&aPlease validate by entering your key: /2fa <key>",
+            "&6This server supports two-factor authentication and is highly recommended",
+            "&6Get started by running /2fa"
     );
 
     public String getPrefix() {
