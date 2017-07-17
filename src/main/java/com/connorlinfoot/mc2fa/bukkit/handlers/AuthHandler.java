@@ -40,32 +40,57 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
         }
     }
 
+    public void sendLinkedMessage(Player player, String message, String url) {
+        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " {\"text\":\"\",\"extra\":[{\"text\":\"%%message%%\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%%url%%\"}}]}".replaceAll("%%message%%", message).replaceAll("%%url%%", url));
+    }
+
     public void giveQRItem(MC2FA mc2FA, Player player) {
         String url = getQRCodeURL(mc2FA.getConfigHandler().getQrCodeURL(), player.getUniqueId());
         final MessageHandler messageHandler = mc2FA.getMessageHandler();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                MapView view = Bukkit.createMap(player.getWorld());
-                view.getRenderers().forEach(view::removeRenderer);
-                try {
-                    ImageRenderer renderer = new ImageRenderer(url);
-                    view.addRenderer(renderer);
-                    ItemStack mapItem = new ItemStack(Material.MAP, 1, view.getId());
-                    ItemMeta mapMeta = mapItem.getItemMeta();
-                    mapMeta.setDisplayName(ChatColor.GOLD + "QR Code");
-                    mapItem.setItemMeta(mapMeta);
+        if (player.getInventory().firstEmpty() < 0) {
+            // Just send a link, inventory is full!
+            messageHandler.sendMessage(player, "&aPlease use the QR code given to setup two-factor authentication");
+            sendLinkedMessage(player, messageHandler.getMessage("&aPlease click here to open the QR code"), url.replaceAll("128x128", "256x256"));
+            messageHandler.sendMessage(player, "&aPlease validate by entering your key: /2fa <key>");
+        } else {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    MapView view = Bukkit.createMap(player.getWorld());
+                    view.getRenderers().forEach(view::removeRenderer);
+                    try {
+                        ImageRenderer renderer = new ImageRenderer(url);
+                        view.addRenderer(renderer);
+                        ItemStack mapItem = new ItemStack(Material.MAP, 1, view.getId());
+                        ItemMeta mapMeta = mapItem.getItemMeta();
+                        mapMeta.setDisplayName(ChatColor.GOLD + "QR Code");
+                        mapItem.setItemMeta(mapMeta);
 
-                    player.getInventory().addItem(mapItem);
-//                    player.getInventory().setHeldItemSlot(0);
-                    messageHandler.sendMessage(player, "&aPlease use the QR code given to setup two-factor authentication");
-                    messageHandler.sendMessage(player, "&aPlease validate by entering your key: /2fa <key>");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    player.sendMessage(ChatColor.RED + "An error occurred! Is the URL correct?");
+                        if (player.getInventory().firstEmpty() < 0) {
+                            // Send message instead!
+                            messageHandler.sendMessage(player, "&aPlease use the QR code given to setup two-factor authentication");
+                            sendLinkedMessage(player, messageHandler.getMessage("&aPlease click here to open the QR code"), url.replaceAll("128x128", "256x256"));
+                            messageHandler.sendMessage(player, "&aPlease validate by entering your key: /2fa <key>");
+                        } else {
+                            ItemStack itemStack0 = null;
+                            if (player.getInventory().firstEmpty() != 0) {
+                                itemStack0 = player.getInventory().getItem(0);
+                            }
+                            player.getInventory().setItem(0, mapItem);
+                            if (itemStack0 != null) {
+                                player.getInventory().addItem(itemStack0);
+                            }
+                            player.getInventory().setHeldItemSlot(0);
+                            messageHandler.sendMessage(player, "&aPlease use the QR code given to setup two-factor authentication");
+                            messageHandler.sendMessage(player, "&aPlease validate by entering your key: /2fa <key>");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        player.sendMessage(ChatColor.RED + "An error occurred! Is the URL correct?");
+                    }
                 }
-            }
-        }.runTaskAsynchronously(mc2FA);
+            }.runTaskAsynchronously(mc2FA);
+        }
     }
 
     public void open2FAGUI(Player player) {
@@ -152,7 +177,7 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
                 // Advise of 2FA
                 if (mc2FA.getConfigHandler().isAdvise()) {
                     mc2FA.getMessageHandler().sendMessage(player, "&6This server supports two-factor authentication and is highly recommended");
-                    mc2FA.getMessageHandler().sendMessage(player, "&6Get started by running /2fa");
+                    mc2FA.getMessageHandler().sendMessage(player, "&6Get started by running \"/2fa enable\"");
                 }
             }
         }

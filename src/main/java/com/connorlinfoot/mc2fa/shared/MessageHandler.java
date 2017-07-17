@@ -23,9 +23,10 @@ public abstract class MessageHandler {
             "&aPlease use the QR code given to setup two-factor authentication",
             "&aPlease validate by entering your key: /2fa <key>",
             "&6This server supports two-factor authentication and is highly recommended",
-            "&6Get started by running /2fa",
+            "&6Get started by running \"/2fa enable\"",
             "&cTwo-factor authentication is enabled on this account",
-            "&cPlease authenticate using /2fa <key>"
+            "&cPlease authenticate using /2fa <key>",
+            "&aPlease click here to open the QR code"
     );
 
     public String getPrefix() {

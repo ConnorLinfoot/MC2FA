@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigHandler {
-    private String qrCodeURL = "https://www.google.com/chart?chs=128x128&chld=M%%7C0&cht=qr&chl=otpauth://totp/%%label%%?secret=%%key%%";
+    private String qrCodeURL = "https://www.google.com/chart?chs=128x128&cht=qr&chl=otpauth://totp/%%label%%?secret=%%key%%";
     private boolean debug = false;
     private boolean commandsDisabled = true;
     private boolean advise = true;
