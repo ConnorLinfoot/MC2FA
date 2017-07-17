@@ -9,8 +9,9 @@ import java.util.List;
 public class ConfigHandler {
     private String qrCodeURL = "https://www.google.com/chart?chs=128x128&chld=M%%7C0&cht=qr&chl=otpauth://totp/%%label%%?secret=%%key%%";
     private boolean debug = false;
-    private boolean enabled = true;
     private boolean commandsDisabled = true;
+    private boolean advise = true;
+    private boolean guiKeypad = true;
     private KeyStorage keyStorage = KeyStorage.FLAT;
     private Forced forced = Forced.FALSE;
     private List<String> whitelistedCommands = new ArrayList<>();
@@ -30,11 +31,14 @@ public class ConfigHandler {
         if (config.isSet("Debug"))
             debug = config.getBoolean("Debug");
 
-        if (config.isSet("Enabled"))
-            enabled = config.getBoolean("Enabled");
-
         if (config.isSet("Disable Commands"))
             commandsDisabled = config.getBoolean("Disable Commands");
+
+        if (config.isSet("Advise"))
+            advise = config.getBoolean("Advise");
+
+        if (config.isSet("GUI Keypad"))
+            guiKeypad = config.getBoolean("GUI Keypad");
 
         if (config.isSet("Whitelisted Commands"))
             whitelistedCommands = config.getStringList("Whitelisted Commands");
@@ -78,12 +82,16 @@ public class ConfigHandler {
         return debug;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
     public boolean isCommandsDisabled() {
         return commandsDisabled;
+    }
+
+    public boolean isAdvise() {
+        return advise;
+    }
+
+    public boolean isGuiKeypad() {
+        return guiKeypad;
     }
 
     public List<String> getWhitelistedCommands() {

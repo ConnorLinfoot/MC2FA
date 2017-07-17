@@ -137,9 +137,11 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
         boolean is2fa = isEnabled(uuid);
         if (is2fa) {
             if (needsToAuthenticate(uuid)) {
-                // Require password from 2FA // TODO Made the messages nicer
-                player.sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.RED + "You must authenticate using /2fa");
-                Bukkit.getScheduler().runTaskLater(mc2FA, () -> open2FAGUI(player), 5L); // TODO needs to be an option
+                // Require key from 2FA
+                mc2FA.getMessageHandler().sendMessage(player, "&cTwo-factor authentication is enabled on this account");
+                mc2FA.getMessageHandler().sendMessage(player, "&cPlease authenticate using /2fa <key>");
+                if (mc2FA.getConfigHandler().isGuiKeypad())
+                    Bukkit.getScheduler().runTaskLater(mc2FA, () -> open2FAGUI(player), 5L);
             }
         } else {
             if (mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.TRUE || (player.isOp() && mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.OP)) {
@@ -148,8 +150,10 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
                 mc2FA.getAuthHandler().giveQRItem(mc2FA, player);
             } else {
                 // Advise of 2FA
-                mc2FA.getMessageHandler().sendMessage(player, "&6This server supports two-factor authentication and is highly recommended");
-                mc2FA.getMessageHandler().sendMessage(player, "&6Get started by running /2fa");
+                if (mc2FA.getConfigHandler().isAdvise()) {
+                    mc2FA.getMessageHandler().sendMessage(player, "&6This server supports two-factor authentication and is highly recommended");
+                    mc2FA.getMessageHandler().sendMessage(player, "&6Get started by running /2fa");
+                }
             }
         }
     }

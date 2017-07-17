@@ -24,6 +24,9 @@ Key Storage: FLAT
 # Advise of 2FA - Whether to send a message to players on join notifying them that 2FA is available. // TODO
 Advise: true
 
+# Use GUI keypad - Whether or not to show the keypad for users to enter their key on join
+GUI Keypad: true
+
 # If the above is MYSQL please enter MySQL connection details (Coming Soon)
 MySQL Host: 127.0.0.1
 MySQL Port: 3306
