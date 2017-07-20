@@ -75,7 +75,7 @@ public class CommandHandler extends Command {
                     case "true":
                         if (mc2FA.getAuthHandler().getState(player.getUniqueId()).equals(AuthHandler.AuthState.DISABLED)) {
                             mc2FA.getAuthHandler().createKey(player.getUniqueId());
-                            player.sendMessage(mc2FA.getAuthHandler().getQRCodeURL(player.getUniqueId()));
+                            player.sendMessage(mc2FA.getAuthHandler().getQRCodeURL(mc2FA.getConfigHandler().getQrCodeURL(), player.getUniqueId()));
                         } else {
                             player.sendMessage(ChatColor.RED + "You are already setup with 2FA");
                         }

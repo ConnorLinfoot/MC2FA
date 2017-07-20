@@ -61,13 +61,23 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
             if (mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.TRUE) {
                 // Force 2FA
                 mc2FA.getAuthHandler().createKey(player.getUniqueId());
-                player.sendMessage(mc2FA.getAuthHandler().getQRCodeURL(player.getUniqueId()));
+                player.sendMessage(mc2FA.getAuthHandler().getQRCodeURL(mc2FA.getConfigHandler().getQrCodeURL(), player.getUniqueId()));
             } else {
                 // Advise of 2FA
                 player.sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.GOLD + "This server supports two-factor authentication and is highly recommended");
                 player.sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.GOLD + "Get started by running /2fa");
             }
         }
+    }
+
+    @Override
+    public void changeState(UUID uuid, AuthState authState) {
+        if (authState == getState(uuid))
+            return;
+
+        // TODO Event
+
+        authStates.put(uuid, authState);
     }
 
     public boolean hasGUIOpen(UUID uuid) {
