@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ConfigHandler {
+    protected String qrCodeURL = "https://www.google.com/chart?chs=128x128&cht=qr&chl=otpauth://totp/%%label%%?secret=%%key%%";
+    protected String label = "%%name%%:MC2FA";
     protected boolean debug = false;
     protected boolean enabled = true;
     protected boolean commandsDisabled = true;
+    protected boolean advise = true;
+    protected boolean guiKeypad = true;
     protected KeyStorage keyStorage = KeyStorage.FLAT;
     protected Forced forced = Forced.FALSE;
     protected Mode mode = Mode.UNKNOWN;
@@ -14,11 +18,11 @@ public abstract class ConfigHandler {
     protected List<String> blacklistedCommands = new ArrayList<>();
 
     public enum KeyStorage {
-        FLAT, MYSQL
+        FLAT, SQLITE, MYSQL
     }
 
     public enum Forced {
-        TRUE, FALSE, PERM
+        TRUE, FALSE, PERM, OP
     }
 
     public enum Mode {
@@ -32,8 +36,12 @@ public abstract class ConfigHandler {
         return debug;
     }
 
-    public boolean isEnabled() {
-        return enabled;
+    public boolean isAdvise() {
+        return advise;
+    }
+
+    public boolean isGuiKeypad() {
+        return guiKeypad;
     }
 
     public boolean isCommandsDisabled() {
@@ -58,6 +66,14 @@ public abstract class ConfigHandler {
 
     public Mode getMode() {
         return mode;
+    }
+
+    public String getQrCodeURL() {
+        return qrCodeURL;
+    }
+
+    public String getLabel() {
+        return label;
     }
 
 }

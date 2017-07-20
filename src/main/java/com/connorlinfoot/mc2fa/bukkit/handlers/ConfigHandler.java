@@ -4,28 +4,7 @@ import com.connorlinfoot.mc2fa.bukkit.MC2FA;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class ConfigHandler {
-    private String qrCodeURL = "https://www.google.com/chart?chs=128x128&cht=qr&chl=otpauth://totp/%%label%%?secret=%%key%%";
-    private String label = "%%name%%:MC2FA";
-    private boolean debug = false;
-    private boolean commandsDisabled = true;
-    private boolean advise = true;
-    private boolean guiKeypad = true;
-    private KeyStorage keyStorage = KeyStorage.FLAT;
-    private Forced forced = Forced.FALSE;
-    private List<String> whitelistedCommands = new ArrayList<>();
-    private List<String> blacklistedCommands = new ArrayList<>();
-
-    public enum KeyStorage {
-        FLAT, SQLITE, MYSQL
-    }
-
-    public enum Forced {
-        TRUE, FALSE, OP
-    }
+public class ConfigHandler extends com.connorlinfoot.mc2fa.shared.ConfigHandler {
 
     public ConfigHandler(MC2FA mc2FA) {
         FileConfiguration config = mc2FA.getConfig();
@@ -84,47 +63,11 @@ public class ConfigHandler {
         }
     }
 
-    public boolean isDebug() {
-        return debug;
-    }
-
-    public boolean isCommandsDisabled() {
-        return commandsDisabled;
-    }
-
-    public boolean isAdvise() {
-        return advise;
-    }
-
-    public boolean isGuiKeypad() {
-        return guiKeypad;
-    }
-
-    public List<String> getWhitelistedCommands() {
-        return whitelistedCommands;
-    }
-
-    public List<String> getBlacklistedCommands() {
-        return blacklistedCommands;
-    }
-
-    public KeyStorage getKeyStorage() {
-        return keyStorage;
-    }
-
-    public Forced getForced() {
-        return forced;
-    }
-
-    public String getQrCodeURL() {
-        return qrCodeURL;
-    }
-
     public String getLabel(Player player) {
         if (player == null) {
             return "";
         }
-        return label.replaceAll("%%name%%", player.getName());
+        return getLabel().replaceAll("%%name%%", player.getName());
     }
 
 }

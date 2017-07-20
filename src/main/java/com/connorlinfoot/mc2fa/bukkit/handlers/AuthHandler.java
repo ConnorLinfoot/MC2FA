@@ -169,7 +169,7 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
                     Bukkit.getScheduler().runTaskLater(mc2FA, () -> open2FAGUI(player), 5L);
             }
         } else {
-            if (mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.TRUE || (player.isOp() && mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.PERM)) {
+            if (mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.TRUE || (player.isOp() && mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.OP)) {
                 // Force 2FA
                 mc2FA.getAuthHandler().createKey(player.getUniqueId());
                 mc2FA.getAuthHandler().giveQRItem(mc2FA, player);
