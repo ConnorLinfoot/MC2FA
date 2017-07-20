@@ -213,10 +213,12 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
 
     @Override
     public String getQRCodeURL(String urlTemplate, UUID uuid) {
-        String label = "MC2FA";
+        String label;
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
-            label = player.getName() + ":" + label;
+            label = mc2FA.getConfigHandler().getLabel(player);
+        } else {
+            label = "";
         }
         return super.getQRCodeURL(urlTemplate, uuid).replaceAll("%%label%%", label);
     }

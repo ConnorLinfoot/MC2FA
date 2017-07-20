@@ -2,12 +2,14 @@ package com.connorlinfoot.mc2fa.bukkit.handlers;
 
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigHandler {
     private String qrCodeURL = "https://www.google.com/chart?chs=128x128&cht=qr&chl=otpauth://totp/%%label%%?secret=%%key%%";
+    private String label = "%%name%%:MC2FA";
     private boolean debug = false;
     private boolean commandsDisabled = true;
     private boolean advise = true;
@@ -76,6 +78,10 @@ public class ConfigHandler {
         if (config.isSet("QR Code URL")) {
             qrCodeURL = config.getString("QR Code URL");
         }
+
+        if (config.isSet("OTP Label")) {
+            label = config.getString("OTP Label");
+        }
     }
 
     public boolean isDebug() {
@@ -112,6 +118,13 @@ public class ConfigHandler {
 
     public String getQrCodeURL() {
         return qrCodeURL;
+    }
+
+    public String getLabel(Player player) {
+        if (player == null) {
+            return "";
+        }
+        return label.replaceAll("%%name%%", player.getName());
     }
 
 }
