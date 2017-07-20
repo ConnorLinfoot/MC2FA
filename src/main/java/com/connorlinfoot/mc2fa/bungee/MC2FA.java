@@ -17,11 +17,6 @@ public class MC2FA extends Plugin {
     public void onEnable() {
         configHandler = new ConfigHandler(this);
 
-        if (getConfigHandler().getMode() == com.connorlinfoot.mc2fa.shared.ConfigHandler.Mode.UNKNOWN) {
-            getLogger().severe("No mode has been set! MC2FA has not been enabled!");
-            return;
-        }
-
         // Check if BungeeUtils exists, if so use the correct auth handler etc
         try {
             Class.forName("dev.wolveringer.bungeeutil.player.Player");
