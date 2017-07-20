@@ -12,6 +12,17 @@ public class ConfigHandler extends com.connorlinfoot.mc2fa.shared.ConfigHandler 
         if (config.isSet("Debug"))
             debug = config.getBoolean("Debug");
 
+        if (config.isSet("Mode")) {
+            try {
+                mode = Mode.valueOf(config.getString("Mode").toUpperCase());
+            } catch (Exception ignored) {
+            }
+        }
+
+        if (mode == Mode.DEFAULT || mode == Mode.BUNGEE) {
+            mode = Mode.BUKKIT; // Force Bukkit if default or Bungee
+        }
+
         if (config.isSet("Disable Commands"))
             commandsDisabled = config.getBoolean("Disable Commands");
 

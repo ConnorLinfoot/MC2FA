@@ -1,7 +1,7 @@
 # MC2FA v${project.version} Configuration
 
 # What mode MC2FA should be running in, find more about modes at // TODO Wiki for this
-Mode: UNKNOWN
+Mode: DEFAULT
 
 # Whether or not MC2FA should report back stats to MCStats.xyz
 MCStats: true

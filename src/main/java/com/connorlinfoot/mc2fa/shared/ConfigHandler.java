@@ -13,7 +13,7 @@ public abstract class ConfigHandler {
     protected boolean guiKeypad = true;
     protected KeyStorage keyStorage = KeyStorage.FLAT;
     protected Forced forced = Forced.FALSE;
-    protected Mode mode = Mode.UNKNOWN;
+    protected Mode mode = Mode.DEFAULT;
     protected List<String> whitelistedCommands = new ArrayList<>();
     protected List<String> blacklistedCommands = new ArrayList<>();
 
@@ -26,7 +26,7 @@ public abstract class ConfigHandler {
     }
 
     public enum Mode {
-        UNKNOWN, BUKKIT, BUNGEE, CROSSOVER
+        DEFAULT, BUKKIT, BUNGEE, CROSSOVER
     }
 
     public ConfigHandler() {
