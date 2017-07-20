@@ -28,6 +28,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        if (mc2FA.isUpdateAvailable() && event.getPlayer().isOp()) {
+            event.getPlayer().sendMessage(mc2FA.getUpdateMessage());
+        }
+        if (mc2FA.getPluginMessage() != null && event.getPlayer().isOp()) {
+            event.getPlayer().sendMessage(mc2FA.getPluginMessage());
+        }
+
         mc2FA.getAuthHandler().playerJoin(event.getPlayer().getUniqueId());
         event.getPlayer().getInventory().forEach(itemStack -> {
             if (mc2FA.getAuthHandler().isQRCodeItem(itemStack))
