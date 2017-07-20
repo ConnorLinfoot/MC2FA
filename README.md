@@ -11,6 +11,9 @@ MC2FA is a upcoming **free** two-factor authentication plugin for Bukkit, Spigot
 - In-game QR display using maps *Bukkit/Spigot*
 - Supports flat file or MySQL for key storage. *Coming Soon*
 - Option to force 2FA for players (or even just on a permission)
+- In-game QR display using maps
+- Supports flat file, SQLite or MySQL for key storage. (SQLite and MySQL coming soon)
+- Option to force 2FA for players (or even just OPs)
 - Disables basic tasks like player movement, block breaking, chat, inventory changes and more
 
 ## Planned
