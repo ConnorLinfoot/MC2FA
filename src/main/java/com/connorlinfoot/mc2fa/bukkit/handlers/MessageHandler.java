@@ -1,12 +1,12 @@
 package com.connorlinfoot.mc2fa.bukkit.handlers;
 
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
-import com.google.common.io.ByteStreams;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
 public class MessageHandler extends com.connorlinfoot.mc2fa.shared.MessageHandler {
     private MC2FA mc2FA;
@@ -26,38 +26,38 @@ public class MessageHandler extends com.connorlinfoot.mc2fa.shared.MessageHandle
     }
 
     public String getMessage(String message) {
-        return getPrefix() + ChatColor.translateAlternateColorCodes('&', messagesConfig.getString(message, message));
+        message = messagesConfig.getString(message, message);
+        return getPrefix() + ChatColor.translateAlternateColorCodes('&', message);
     }
 
     public void sendMessage(Player player, String message) {
-        player.sendMessage(getMessage(message));
+        message = getMessage(message);
+        player.sendMessage(message);
     }
 
     public void loadConfiguration() {
+        if (!mc2FA.getDataFolder().exists()) {
+            mc2FA.getDataFolder().mkdirs();
+        }
         File messagesFile = new File(mc2FA.getDataFolder(), "messages.yml");
         if (!messagesFile.exists()) {
             try {
                 messagesFile.createNewFile();
-                InputStream inputStream = mc2FA.getResource("messages.yml");
-                OutputStream outputStream = new FileOutputStream(messagesFile);
-                ByteStreams.copy(inputStream, outputStream);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
 
-        if (!messagesConfig.isSet("Prefix"))
+        if (!messagesConfig.isSet("Prefix")) {
             messagesConfig.set("Prefix", "&7[&bMC2FA&7]");
+        }
 
-        if (!messagesConfig.isSet("Validate"))
-            messagesConfig.set("Validate", "&cPlease validate your account with two-factor authentication");
-
-        if (!messagesConfig.isSet("Invalid Key"))
-            messagesConfig.set("Invalid Key", "&cThe key you entered was not valid, please try again");
-
-        if (!messagesConfig.isSet("Setup Success"))
-            messagesConfig.set("Setup Success", "&aYou have successfully setup two-factor authentication");
+        for (String message : getDefaults()) {
+            if (!messagesConfig.isSet(message)) {
+                messagesConfig.set(message, message);
+            }
+        }
 
         try {
             messagesConfig.save(messagesFile);

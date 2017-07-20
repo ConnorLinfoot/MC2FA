@@ -4,7 +4,6 @@ import com.connorlinfoot.mc2fa.bukkit.MC2FA;
 import com.connorlinfoot.mc2fa.shared.AuthHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,7 +20,7 @@ public class CommandHandler implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String string, String[] args) {
         MessageHandler messageHandler = mc2FA.getMessageHandler();
         if (!(sender instanceof Player)) {
-            sender.sendMessage(messageHandler.getPrefix() + ChatColor.RED + "This command must be ran as a player");
+            sender.sendMessage(messageHandler.getMessage("&cThis command must be ran as a player"));
             return false;
         }
         Player player = (Player) sender;
@@ -29,75 +28,88 @@ public class CommandHandler implements CommandExecutor {
 
         if (mc2FA.getAuthHandler().getState(player.getUniqueId()).equals(AuthHandler.AuthState.PENDING_LOGIN)) {
             if (args.length == 0) {
-                player.sendMessage(ChatColor.RED + "Correct usage: /2fa <key>");
+                messageHandler.sendMessage(player, "&cCorrect usage: /2fa <key>");
             } else {
                 try {
                     boolean isValid = mc2FA.getAuthHandler().validateKey(player.getUniqueId(), Integer.valueOf(args[0]));
                     if (isValid) {
-                        player.sendMessage(ChatColor.GREEN + "You have successfully authenticated");
+                        messageHandler.sendMessage(player, "&aYou have successfully authenticated");
                     } else {
-                        player.sendMessage(ChatColor.RED + "Incorrect key, please try again");
+                        messageHandler.sendMessage(player, "&cIncorrect key, please try again");
                     }
                 } catch (Exception e) {
-                    player.sendMessage(messageHandler.getPrefix() + ChatColor.RED + "Invalid key entered");
+                    messageHandler.sendMessage(player, "&cInvalid key entered");
                     return true;
                 }
             }
         } else if (mc2FA.getAuthHandler().getState(player.getUniqueId()).equals(AuthHandler.AuthState.PENDING_SETUP)) {
             if (args.length == 0) {
-                player.sendMessage(messageHandler.getPrefix() + ChatColor.RED + "Please validate your two-factor authentication key with /" + string + " <key>");
+                messageHandler.sendMessage(player, "&cPlease validate your two-factor authentication key with /2fa <key>");
             } else {
                 Integer key;
                 try {
                     key = Integer.valueOf(args[0]);
                 } catch (Exception e) {
-                    player.sendMessage(messageHandler.getPrefix() + ChatColor.RED + "Invalid key entered");
+                    messageHandler.sendMessage(player, "&cInvalid key entered");
                     return true;
                 }
 
                 boolean approved = mc2FA.getAuthHandler().approveKey(player.getUniqueId(), key);
                 if (approved) {
-                    player.sendMessage(messageHandler.getMessage("Setup Success"));
+                    messageHandler.sendMessage(player, "&aYou have successfully setup two-factor authentication");
                     player.getInventory().forEach(itemStack -> {
-                        if (itemStack != null && itemStack.getType() == Material.MAP && itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName() && itemStack.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "QR Code")) {
+                        if (mc2FA.getAuthHandler().isQRCodeItem(itemStack))
                             player.getInventory().remove(itemStack);
-                        }
                     });
                 } else {
-                    player.sendMessage(messageHandler.getMessage("Invalid Key"));
+                    messageHandler.sendMessage(player, "&cThe key you entered was not valid, please try again");
                 }
             }
         } else {
 
             if (args.length == 0 || (args.length > 0 && args[0].equalsIgnoreCase("help"))) {
-                sender.sendMessage(ChatColor.AQUA + "---------- " + ChatColor.GOLD + "MC2FA" + ChatColor.AQUA + " ----------");
-                sender.sendMessage(ChatColor.YELLOW + "// TODO");
+                sender.sendMessage(ChatColor.AQUA + "--------------- " + ChatColor.GOLD + "MC2FA" + ChatColor.AQUA + " ---------------");
+                if (mc2FA.getAuthHandler().isEnabled(((Player) sender).getUniqueId())) {
+//                    sender.sendMessage(ChatColor.GOLD + "/2fa reset <key> " + ChatColor.YELLOW + "Disables two-factor authentication");
+                    sender.sendMessage(ChatColor.GOLD + "/2fa reset " + ChatColor.YELLOW + "Disables two-factor authentication");
+                } else {
+                    sender.sendMessage(ChatColor.GOLD + "/2fa enable " + ChatColor.YELLOW + "Enables two-factor authentication");
+                }
+                if (sender.isOp()) {
+                    sender.sendMessage(ChatColor.GOLD + "/2fa debug " + ChatColor.YELLOW + "Debug two-factor authentication");
+                }
             } else {
                 switch (args[0].toLowerCase()) {
                     default:
-                        sender.sendMessage(ChatColor.RED + "Unknown argument");
+                        messageHandler.sendMessage(player, "&cUnknown argument");
                         break;
                     case "enable":
                     case "on":
                     case "true":
+                    case "activate":
                         if (mc2FA.getAuthHandler().getState(player.getUniqueId()).equals(AuthHandler.AuthState.DISABLED)) {
                             mc2FA.getAuthHandler().createKey(player.getUniqueId());
                             mc2FA.getAuthHandler().giveQRItem(mc2FA, player);
                         } else {
-                            player.sendMessage(ChatColor.RED + "You are already setup with 2FA");
+                            messageHandler.sendMessage(player, "&cYou are already setup with 2FA");
                         }
                         break;
+                    case "deactivate":
+                    case "off":
+                    case "false":
+                    case "disable":
                     case "reset":
+                        // TODO make this require the key to reset, makes it more secure!
                         if (mc2FA.getAuthHandler().isEnabled(player.getUniqueId())) {
                             mc2FA.getAuthHandler().reset(player.getUniqueId());
-                            player.sendMessage(ChatColor.GREEN + "Your 2FA has been reset");
+                            messageHandler.sendMessage(player, "&aYour 2FA has been reset");
                         } else {
-                            player.sendMessage(ChatColor.RED + "You are not setup with 2FA");
+                            messageHandler.sendMessage(player, "&cYou are not setup with 2FA");
                         }
                         break;
                     case "debug":
                         if (!sender.isOp()) {
-                            sender.sendMessage(ChatColor.RED + "You do not have permission to run this command");
+                            messageHandler.sendMessage(player, "&cYou do not have permission to run this command");
                             return true;
                         }
                         if (args.length == 1) {
@@ -129,41 +141,6 @@ public class CommandHandler implements CommandExecutor {
                         break;
                 }
             }
-
-//            Player player = (Player) sender;
-//            if (mc2FA.getAuthHandler().isPendingSetup(player.getUniqueId())) {
-//                if (args.length == 0) {
-//                    player.sendMessage(messageHandler.getPrefix() + ChatColor.RED + "Please validate your two-factor authentication key with /" + string + " <key>");
-//                } else {
-//                    Integer key;
-//                    try {
-//                        key = Integer.valueOf(args[0]);
-//                    } catch (Exception e) {
-//                        player.sendMessage(messageHandler.getPrefix() + ChatColor.RED + "Invalid key entered");
-//                        return false;
-//                    }
-//
-//                    boolean approved = mc2FA.getAuthHandler().approveKey(player.getUniqueId(), key);
-//                    if (approved) {
-//                        player.sendMessage(messageHandler.getMessage("Setup Success"));
-//                        player.getInventory().forEach(itemStack -> {
-//                            if (itemStack != null && itemStack.getType() == Material.MAP && itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName() && itemStack.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "QR Code")) {
-//                                player.getInventory().remove(itemStack);
-//                            }
-//                        });
-//                    } else {
-//                        player.sendMessage(messageHandler.getMessage("Invalid Key"));
-//                    }
-//                }
-//            } else if (!mc2FA.getAuthHandler().isEnabled(player.getUniqueId())) {
-//                mc2FA.getAuthHandler().createKey(player.getUniqueId());
-//                mc2FA.getAuthHandler().giveQRItem(mc2FA, player);
-//            } else {
-//                if (args.length > 0) {
-//                    boolean isValid = mc2FA.getAuthHandler().validateKey(player.getUniqueId(), Integer.valueOf(args[0]));
-//                    player.sendMessage(String.valueOf(isValid));
-//                }
-//            }
 
         }
 

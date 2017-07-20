@@ -33,7 +33,7 @@ public abstract class AuthHandler {
     public String createKey(UUID uuid) {
         GoogleAuthenticator authenticator = new GoogleAuthenticator();
         GoogleAuthenticatorKey key = authenticator.createCredentials();
-        authStates.put(uuid, AuthState.PENDING_SETUP);
+        changeState(uuid, AuthState.PENDING_SETUP);
         pendingKeys.put(uuid, key.getKey());
         return key.getKey();
     }
@@ -42,7 +42,7 @@ public abstract class AuthHandler {
         try {
             String key = getKey(uuid);
             if (key != null && new GoogleAuthenticator().authorize(key, password)) {
-                authStates.put(uuid, AuthState.AUTHENTICATED);
+                changeState(uuid, AuthState.AUTHENTICATED);
                 return true;
             }
         } catch (Exception ignored) {
@@ -53,7 +53,7 @@ public abstract class AuthHandler {
     public boolean approveKey(UUID uuid, Integer password) {
         String key = getPendingKey(uuid);
         if (key != null && new GoogleAuthenticator().authorize(key, password)) {
-            authStates.put(uuid, AuthState.AUTHENTICATED);
+            changeState(uuid, AuthState.AUTHENTICATED);
             pendingKeys.remove(uuid);
             getStorageHandler().setKey(uuid, key);
             return true;
@@ -73,12 +73,11 @@ public abstract class AuthHandler {
         return pendingKeys.get(uuid);
     }
 
-    public String getQRCodeURL(UUID uuid) {
-        String urlTemplate = "https://www.google.com/chart?chs=128x128&chld=M%%7C0&cht=qr&chl=otpauth://totp/MC2FA:MC2FA?secret=%key%";
+    public String getQRCodeURL(String urlTemplate, UUID uuid) {
         String key = getPendingKey(uuid);
         if (key == null)
             return null;
-        return urlTemplate.replaceAll("%key%", key);
+        return urlTemplate.replaceAll("%%key%%", key);
     }
 
     public boolean needsToAuthenticate(UUID uuid) {
@@ -87,7 +86,7 @@ public abstract class AuthHandler {
 
     public void reset(UUID uuid) {
         pendingKeys.remove(uuid);
-        authStates.put(uuid, AuthState.DISABLED);
+        changeState(uuid, AuthState.DISABLED);
         getStorageHandler().removeKey(uuid);
     }
 
@@ -105,5 +104,7 @@ public abstract class AuthHandler {
     public StorageHandler getStorageHandler() {
         return storageHandler;
     }
+
+    public abstract void changeState(UUID uuid, AuthState authState);
 
 }

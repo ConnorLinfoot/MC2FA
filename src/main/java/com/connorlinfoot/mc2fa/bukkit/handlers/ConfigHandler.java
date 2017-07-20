@@ -2,8 +2,30 @@ package com.connorlinfoot.mc2fa.bukkit.handlers;
 
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
-public class ConfigHandler extends com.connorlinfoot.mc2fa.shared.ConfigHandler {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ConfigHandler {
+    private String qrCodeURL = "https://www.google.com/chart?chs=128x128&cht=qr&chl=otpauth://totp/%%label%%?secret=%%key%%";
+    private String label = "%%name%%:MC2FA";
+    private boolean debug = false;
+    private boolean commandsDisabled = true;
+    private boolean advise = true;
+    private boolean guiKeypad = true;
+    private KeyStorage keyStorage = KeyStorage.FLAT;
+    private Forced forced = Forced.FALSE;
+    private List<String> whitelistedCommands = new ArrayList<>();
+    private List<String> blacklistedCommands = new ArrayList<>();
+
+    public enum KeyStorage {
+        FLAT, SQLITE, MYSQL
+    }
+
+    public enum Forced {
+        TRUE, FALSE, OP
+    }
 
     public ConfigHandler(MC2FA mc2FA) {
         FileConfiguration config = mc2FA.getConfig();
@@ -11,11 +33,14 @@ public class ConfigHandler extends com.connorlinfoot.mc2fa.shared.ConfigHandler 
         if (config.isSet("Debug"))
             debug = config.getBoolean("Debug");
 
-        if (config.isSet("Enabled"))
-            enabled = config.getBoolean("Enabled");
-
         if (config.isSet("Disable Commands"))
             commandsDisabled = config.getBoolean("Disable Commands");
+
+        if (config.isSet("Advise"))
+            advise = config.getBoolean("Advise");
+
+        if (config.isSet("GUI Keypad"))
+            guiKeypad = config.getBoolean("GUI Keypad");
 
         if (config.isSet("Whitelisted Commands"))
             whitelistedCommands = config.getStringList("Whitelisted Commands");
@@ -35,15 +60,10 @@ public class ConfigHandler extends com.connorlinfoot.mc2fa.shared.ConfigHandler 
             }
         }
 
-        if (config.isSet("Mode")) {
-            try {
-                mode = Mode.valueOf(config.getString("Mode").toUpperCase());
-            } catch (Exception ignored) {
-                mode = Mode.UNKNOWN;
-            }
-        }
-
-        if (keyStorage == KeyStorage.MYSQL) {
+        if (keyStorage == KeyStorage.SQLITE) {
+            mc2FA.getLogger().warning("SQLite storage is not yet supported, reverting to flat file storage");
+            keyStorage = KeyStorage.FLAT;
+        } else if (keyStorage == KeyStorage.MYSQL) {
             mc2FA.getLogger().warning("MySQL storage is not yet supported, reverting to flat file storage");
             keyStorage = KeyStorage.FLAT;
         }
@@ -54,6 +74,57 @@ public class ConfigHandler extends com.connorlinfoot.mc2fa.shared.ConfigHandler 
             } catch (Exception ignored) {
             }
         }
+
+        if (config.isSet("QR Code URL")) {
+            qrCodeURL = config.getString("QR Code URL");
+        }
+
+        if (config.isSet("OTP Label")) {
+            label = config.getString("OTP Label");
+        }
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public boolean isCommandsDisabled() {
+        return commandsDisabled;
+    }
+
+    public boolean isAdvise() {
+        return advise;
+    }
+
+    public boolean isGuiKeypad() {
+        return guiKeypad;
+    }
+
+    public List<String> getWhitelistedCommands() {
+        return whitelistedCommands;
+    }
+
+    public List<String> getBlacklistedCommands() {
+        return blacklistedCommands;
+    }
+
+    public KeyStorage getKeyStorage() {
+        return keyStorage;
+    }
+
+    public Forced getForced() {
+        return forced;
+    }
+
+    public String getQrCodeURL() {
+        return qrCodeURL;
+    }
+
+    public String getLabel(Player player) {
+        if (player == null) {
+            return "";
+        }
+        return label.replaceAll("%%name%%", player.getName());
     }
 
 }

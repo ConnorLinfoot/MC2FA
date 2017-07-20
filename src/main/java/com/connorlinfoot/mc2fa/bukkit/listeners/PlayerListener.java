@@ -1,9 +1,11 @@
 package com.connorlinfoot.mc2fa.bukkit.listeners;
 
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
-import com.connorlinfoot.mc2fa.bukkit.handlers.ConfigHandler;
+import com.connorlinfoot.mc2fa.bukkit.events.PlayerStateChangeEvent;
+import com.connorlinfoot.mc2fa.shared.AuthHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,8 +15,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.Inventory;
 
 public class PlayerListener implements Listener {
     private MC2FA mc2FA;
@@ -26,6 +29,14 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         mc2FA.getAuthHandler().playerJoin(event.getPlayer().getUniqueId());
+        event.getPlayer().getInventory().forEach(itemStack -> {
+            if (mc2FA.getAuthHandler().isQRCodeItem(itemStack))
+                event.getPlayer().getInventory().remove(itemStack);
+        });
+        if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
+            event.getPlayer().setWalkSpeed(0);
+            event.getPlayer().setFlySpeed(0);
+        }
     }
 
     @EventHandler
@@ -37,7 +48,7 @@ public class PlayerListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
             if (event.getTo().getBlockZ() != event.getFrom().getBlockZ() || event.getTo().getBlockX() != event.getFrom().getBlockX()) {
-                event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
+                mc2FA.getMessageHandler().sendMessage(event.getPlayer(), "&cPlease validate your account with two-factor authentication");
                 event.setTo(event.getFrom());
             }
         }
@@ -47,7 +58,7 @@ public class PlayerListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
+            mc2FA.getMessageHandler().sendMessage(event.getPlayer(), "&cPlease validate your account with two-factor authentication");
         }
     }
 
@@ -55,7 +66,7 @@ public class PlayerListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
+            mc2FA.getMessageHandler().sendMessage(event.getPlayer(), "&cPlease validate your account with two-factor authentication");
         }
     }
 
@@ -63,7 +74,7 @@ public class PlayerListener implements Listener {
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
+            mc2FA.getMessageHandler().sendMessage(event.getPlayer(), "&cPlease validate your account with two-factor authentication");
         }
     }
 
@@ -82,14 +93,6 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
         }
     }
-
-    /* Doesn't exist in 1.8? */
-//    @EventHandler(priority = EventPriority.LOWEST)
-//    public void onArrowPickup(PlayerPickupArrowEvent event) {
-//        if (mc2FA.getAuthHandler().needsToAuthenticate(event.getPlayer().getUniqueId())) {
-//            event.setCancelled(true);
-//        }
-//    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageEvent event) {
@@ -124,6 +127,19 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
             event.getWhoClicked().closeInventory();
         }
+
+        if ((mc2FA.getAuthHandler().isQRCodeItem(event.getCurrentItem()) || mc2FA.getAuthHandler().isQRCodeItem(event.getCursor())) && (event.getInventory().getType() != InventoryType.PLAYER)) {
+            event.setCancelled(true);
+        } else if (event.getHotbarButton() > -1 && mc2FA.getAuthHandler().isQRCodeItem(event.getWhoClicked().getInventory().getItem(event.getHotbarButton()))) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onItemMove(InventoryMoveItemEvent event) {
+        if (mc2FA.getAuthHandler().isQRCodeItem(event.getItem()) && event.getDestination().getType() != InventoryType.PLAYER) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -135,7 +151,7 @@ public class PlayerListener implements Listener {
                     String command = args[0];
                     if (!mc2FA.getConfigHandler().getWhitelistedCommands().contains(command)) {
                         event.setCancelled(true);
-                        event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
+                        mc2FA.getMessageHandler().sendMessage(event.getPlayer(), "&cPlease validate your account with two-factor authentication");
                     }
                 }
             } else {
@@ -144,10 +160,27 @@ public class PlayerListener implements Listener {
                     String command = args[0];
                     if (mc2FA.getConfigHandler().getBlacklistedCommands().contains(command)) {
                         event.setCancelled(true);
-                        event.getPlayer().sendMessage(mc2FA.getMessageHandler().getMessage("Validate"));
+                        mc2FA.getMessageHandler().sendMessage(event.getPlayer(), "&cPlease validate your account with two-factor authentication");
                     }
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onItemFrameInteract(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked() instanceof ItemFrame) {
+            if (mc2FA.getAuthHandler().isQRCodeItem(event.getPlayer().getItemInHand())) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onAuthState(PlayerStateChangeEvent event) {
+        if (event.getAuthState().equals(AuthHandler.AuthState.AUTHENTICATED)) {
+            event.getPlayer().setFlySpeed((float) 0.1);
+            event.getPlayer().setWalkSpeed((float) 0.2);
         }
     }
 

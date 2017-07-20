@@ -1,9 +1,0 @@
-# [][][][][][][][][][][][][][][][][][][][][]
-#  MC2FA V${project.version} Messages
-# [][][][][][][][][][][][][][][][][][][][][]
-# ------------------------------------------
-
-Prefix: "&7[&bMC2FA&7]"
-Validate: "&cPlease validate your account with two-factor authentication"
-Invalid Key: "&cThe key you entered was not valid, please try again"
-Setup Success: "&aYou have successfully setup two-factor authentication"

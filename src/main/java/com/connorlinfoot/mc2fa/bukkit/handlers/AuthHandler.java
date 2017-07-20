@@ -1,6 +1,7 @@
 package com.connorlinfoot.mc2fa.bukkit.handlers;
 
 import com.connorlinfoot.mc2fa.bukkit.MC2FA;
+import com.connorlinfoot.mc2fa.bukkit.events.PlayerStateChangeEvent;
 import com.connorlinfoot.mc2fa.bukkit.storage.FlatStorage;
 import com.connorlinfoot.mc2fa.bukkit.utils.ImageRenderer;
 import org.bukkit.Bukkit;
@@ -31,6 +32,7 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
             case FLAT:
                 this.storageHandler = new FlatStorage(new File(mc2FA.getDataFolder(), "data.yml"));
                 break;
+            case SQLITE:
             case MYSQL:
                 // SoonTM
                 Bukkit.getLogger().warning("How? O.o");
@@ -38,32 +40,57 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
         }
     }
 
-    public void giveQRItem(MC2FA mc2FA, Player player) {
-        String url = getQRCodeURL(player.getUniqueId());
-        final MessageHandler messageHandler = mc2FA.getMessageHandler();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                MapView view = Bukkit.createMap(player.getWorld());
-                view.getRenderers().forEach(view::removeRenderer);
-                try {
-                    ImageRenderer renderer = new ImageRenderer(url);
-                    view.addRenderer(renderer);
-                    ItemStack mapItem = new ItemStack(Material.MAP, 1, view.getId());
-                    ItemMeta mapMeta = mapItem.getItemMeta();
-                    mapMeta.setDisplayName(ChatColor.GOLD + "QR Code");
-                    mapItem.setItemMeta(mapMeta);
+    public void sendLinkedMessage(Player player, String message, String url) {
+        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " {\"text\":\"\",\"extra\":[{\"text\":\"%%message%%\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%%url%%\"}}]}".replaceAll("%%message%%", message).replaceAll("%%url%%", url));
+    }
 
-                    player.getInventory().addItem(mapItem);
-//                    player.getInventory().setHeldItemSlot(0);
-                    player.sendMessage(messageHandler.getPrefix() + ChatColor.GREEN + "Please use the QR code given to setup two-factor authentication");
-                    player.sendMessage(messageHandler.getPrefix() + ChatColor.GREEN + "Please validate by entering your key: /2fa <key>");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    player.sendMessage(ChatColor.RED + "An error occurred! Is the URL correct?");
+    public void giveQRItem(MC2FA mc2FA, Player player) {
+        String url = getQRCodeURL(mc2FA.getConfigHandler().getQrCodeURL(), player.getUniqueId());
+        final MessageHandler messageHandler = mc2FA.getMessageHandler();
+        if (player.getInventory().firstEmpty() < 0) {
+            // Just send a link, inventory is full!
+            messageHandler.sendMessage(player, "&aPlease use the QR code given to setup two-factor authentication");
+            sendLinkedMessage(player, messageHandler.getMessage("&aPlease click here to open the QR code"), url.replaceAll("128x128", "256x256"));
+            messageHandler.sendMessage(player, "&aPlease validate by entering your key: /2fa <key>");
+        } else {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    MapView view = Bukkit.createMap(player.getWorld());
+                    view.getRenderers().forEach(view::removeRenderer);
+                    try {
+                        ImageRenderer renderer = new ImageRenderer(url);
+                        view.addRenderer(renderer);
+                        ItemStack mapItem = new ItemStack(Material.MAP, 1, view.getId());
+                        ItemMeta mapMeta = mapItem.getItemMeta();
+                        mapMeta.setDisplayName(ChatColor.GOLD + "QR Code");
+                        mapItem.setItemMeta(mapMeta);
+
+                        if (player.getInventory().firstEmpty() < 0) {
+                            // Send message instead!
+                            messageHandler.sendMessage(player, "&aPlease use the QR code given to setup two-factor authentication");
+                            sendLinkedMessage(player, messageHandler.getMessage("&aPlease click here to open the QR code"), url.replaceAll("128x128", "256x256"));
+                            messageHandler.sendMessage(player, "&aPlease validate by entering your key: /2fa <key>");
+                        } else {
+                            ItemStack itemStack0 = null;
+                            if (player.getInventory().firstEmpty() != 0) {
+                                itemStack0 = player.getInventory().getItem(0);
+                            }
+                            player.getInventory().setItem(0, mapItem);
+                            if (itemStack0 != null) {
+                                player.getInventory().addItem(itemStack0);
+                            }
+                            player.getInventory().setHeldItemSlot(0);
+                            messageHandler.sendMessage(player, "&aPlease use the QR code given to setup two-factor authentication");
+                            messageHandler.sendMessage(player, "&aPlease validate by entering your key: /2fa <key>");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        player.sendMessage(ChatColor.RED + "An error occurred! Is the URL correct?");
+                    }
                 }
-            }
-        }.runTaskAsynchronously(mc2FA);
+            }.runTaskAsynchronously(mc2FA);
+        }
     }
 
     public void open2FAGUI(Player player) {
@@ -127,17 +154,19 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
 
         // Load auth state
         if (getStorageHandler().getKey(uuid) != null) {
-            authStates.put(uuid, AuthState.PENDING_LOGIN);
+            changeState(uuid, AuthState.PENDING_LOGIN);
         } else {
-            authStates.put(uuid, AuthState.DISABLED);
+            changeState(uuid, AuthState.DISABLED);
         }
 
         boolean is2fa = isEnabled(uuid);
         if (is2fa) {
             if (needsToAuthenticate(uuid)) {
-                // Require password from 2FA
-                player.sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.RED + "You must authenticate using /2fa");
-                Bukkit.getScheduler().runTaskLater(mc2FA, () -> open2FAGUI(player), 5L);
+                // Require key from 2FA
+                mc2FA.getMessageHandler().sendMessage(player, "&cTwo-factor authentication is enabled on this account");
+                mc2FA.getMessageHandler().sendMessage(player, "&cPlease authenticate using /2fa <key>");
+                if (mc2FA.getConfigHandler().isGuiKeypad())
+                    Bukkit.getScheduler().runTaskLater(mc2FA, () -> open2FAGUI(player), 5L);
             }
         } else {
             if (mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.TRUE || (player.isOp() && mc2FA.getConfigHandler().getForced() == ConfigHandler.Forced.PERM)) {
@@ -146,8 +175,10 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
                 mc2FA.getAuthHandler().giveQRItem(mc2FA, player);
             } else {
                 // Advise of 2FA
-                player.sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.GOLD + "This server supports two-factor authentication and is highly recommended");
-                player.sendMessage(mc2FA.getMessageHandler().getPrefix() + ChatColor.GOLD + "Get started by running /2fa");
+                if (mc2FA.getConfigHandler().isAdvise()) {
+                    mc2FA.getMessageHandler().sendMessage(player, "&6This server supports two-factor authentication and is highly recommended");
+                    mc2FA.getMessageHandler().sendMessage(player, "&6Get started by running \"/2fa enable\"");
+                }
             }
         }
     }
@@ -162,6 +193,38 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
             openGUIs.remove(uuid);
         if (currentGUIKeys.containsKey(uuid))
             currentGUIKeys.remove(uuid);
+    }
+
+    public void changeState(UUID uuid, AuthState authState) {
+        if (authState == getState(uuid))
+            return;
+
+        Player player = Bukkit.getPlayer(uuid);
+        if (player != null) {
+            PlayerStateChangeEvent event = new PlayerStateChangeEvent(player, authState);
+            mc2FA.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled())
+                return;
+            authState = event.getAuthState();
+        }
+
+        authStates.put(uuid, authState);
+    }
+
+    @Override
+    public String getQRCodeURL(String urlTemplate, UUID uuid) {
+        String label;
+        Player player = Bukkit.getPlayer(uuid);
+        if (player != null) {
+            label = mc2FA.getConfigHandler().getLabel(player);
+        } else {
+            label = "";
+        }
+        return super.getQRCodeURL(urlTemplate, uuid).replaceAll("%%label%%", label);
+    }
+
+    public boolean isQRCodeItem(ItemStack itemStack) {
+        return itemStack != null && itemStack.getType() == Material.MAP && itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName() && itemStack.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "QR Code");
     }
 
 }

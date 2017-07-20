@@ -21,7 +21,16 @@ Blacklisted Commands:
   - "op"
   - "spawn"
 
-# Key storage, either FLAT or MYSQL - MySQL is not yet supported
+# Advise of 2FA - Whether to send a message to players on join notifying them that 2FA is available.
+Advise: true
+
+# Use GUI keypad - Whether or not to show the keypad for users to enter their key on join
+GUI Keypad: true
+
+# OTP label - Label that is shown in the two-factor application
+OTP Label: "%%name%%:MC2FA"
+
+# Key storage, either FLAT, SQLite or MYSQL - SQLite and MySQL are not yet supported and are planned for the future
 Key Storage: FLAT
 
 # If the above is MYSQL please enter MySQL connection details (Coming Soon)

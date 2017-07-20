@@ -44,6 +44,10 @@ public class MC2FA extends JavaPlugin {
         if (!Bukkit.getOnlinePlayers().isEmpty()) {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 getAuthHandler().playerJoin(player.getUniqueId());
+                player.getInventory().forEach(itemStack -> {
+                    if (getAuthHandler().isQRCodeItem(itemStack))
+                        player.getInventory().remove(itemStack);
+                });
             }
         }
 
