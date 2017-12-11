@@ -10,7 +10,7 @@ public class PlayerStateChangeEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private Player player;
     private AuthHandler.AuthState authState;
-    private boolean canceled = false;
+    private boolean cancelled = false;
 
     public PlayerStateChangeEvent(Player player, AuthHandler.AuthState authState) {
         super();
@@ -29,12 +29,12 @@ public class PlayerStateChangeEvent extends Event implements Cancellable {
 
     @Override
     public boolean isCancelled() {
-        return canceled;
+        return cancelled;
     }
 
     @Override
-    public void setCancelled(boolean canceled) {
-        this.canceled = canceled;
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
     }
 
     public Player getPlayer() {
