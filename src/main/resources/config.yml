@@ -29,3 +29,10 @@ OTP Label: "%%name%%:MC2FA"
 
 # Key storage, either FLAT, SQLite or MYSQL - SQLite and MySQL are not yet supported and are planned for the future
 Key Storage: FLAT
+
+# If the above is MYSQL please enter MySQL connection details (Coming Soon)
+MySQL Host: 127.0.0.1
+MySQL Port: 3306
+MySQL User: username
+MySQL Pass: password
+MySQL Database: database
