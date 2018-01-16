@@ -122,12 +122,12 @@ public class AuthHandler extends com.connorlinfoot.mc2fa.shared.AuthHandler {
             } else if (slot == 33) {
                 slot = 40;
             }
-            ItemStack itemStack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
-            ItemMeta itemMeta = itemStack.getItemMeta();
             int no = (i + 1);
             if (no == 10) {
                 no = 0;
             }
+            ItemStack itemStack = new ItemStack(Material.STAINED_GLASS_PANE, no, (short) 13);
+            ItemMeta itemMeta = itemStack.getItemMeta();
             itemMeta.setDisplayName(ChatColor.WHITE + "" + no);
             itemStack.setItemMeta(itemMeta);
             gui.setItem(slot, itemStack);
